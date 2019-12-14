@@ -6,11 +6,12 @@ on:
     pull_request:
 
 jobs:
-  test:
-    name: Test
+  unittest:
+    name: unittest
     strategy:
       matrix:
-        go-version: [1.12.x, 1.13.x]
+        # Must use go > 1.13 to support error wrapping
+        go-version: [1.13.x]
     runs-on: ubuntu-latest
     steps:
       - name: Setup Go
