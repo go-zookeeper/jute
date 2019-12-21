@@ -8,7 +8,9 @@
 
 Jute is a implementation of [Apache Zookeepers](https://zookeeper.apache.org/)'s jute IDL and generation code written in pure Go.  This module includes a parser to real the `jute` DDL file into an AST and then a generator to generate serialization/deserialization code.
 
-Jute started out as a serialization format for [Hadoop](https://hadoop.apache.org/) and is no longer being used (Hadoop moved to [Apache Avro](https://avro.apache.org/) as such only Zookeeper seems to be using it.  **Note:** There may be work in future versions of Zookeeper to use a different format as well (see: [ZOOKEEPER-102](https://issues.apache.org/jira/browse/ZOOKEEPER-102)).
+Jute started out as a serialization format for [Hadoop](https://hadoop.apache.org/) and is no longer being used (Hadoop moved to [Apache Avro](https://avro.apache.org/) as such only Zookeeper seems to be using it. 
+
+ **Note:** There may be work in future versions of Zookeeper to use a different format as well (see: [ZOOKEEPER-102](https://issues.apache.org/jira/browse/ZOOKEEPER-102)).
 
 Each jute module is mapped to a Go package with each class getting it's own go file. 
 
