@@ -13,7 +13,6 @@ import (
 type BinaryDecoder struct {
 	r   *bufio.Reader
 	buf [8]byte
-	err error
 }
 
 // NewBinaryDecoder return a new BinaryDecoder wrapping an underlying io.Reader.
