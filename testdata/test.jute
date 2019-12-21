@@ -1,0 +1,36 @@
+module com.github.gozookeeper.jute.test {
+    class Basic {
+        boolean b;
+        byte    p;
+        int     i;
+        long    l;
+        float   f;
+        double  d;
+        ustring s;
+        buffer  buf;
+    }
+
+    class Container {
+        vector<ustring> v;
+        map<int,int>    m;
+        Basic           b;    
+    }
+
+    class NestedContainer {
+        map<int, map<ustring, int>> m1;
+        map<ustring, vector<double>> m2;
+        vector<vector<vector<int>>> v1;
+        vector<map<int, Basic>> v2;
+    }
+
+    class External {
+        com.github.gozookeeper.jute.test.Shared shared;
+        map<int, com.github.gozookeeper.jute.test.Shared> sharedMap;
+    }
+}
+
+module com.github.gozookeeper.jute.test2 {
+    class Shared {
+        int i;
+    }
+}
