@@ -128,6 +128,14 @@ func TestBinaryEncoderMap(t *testing.T) {
 		"two": 2,
 	}
 
+	keys := func(m map[string]int32) []string {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		return keys
+	}
+
 	w := &bytes.Buffer{}
 	enc := NewBinaryEncoder(w)
 	if err := enc.WriteStart(); err != nil {
@@ -137,11 +145,11 @@ func TestBinaryEncoderMap(t *testing.T) {
 		t.Fatalf("unexpected err: %v", err)
 	}
 
-	for k, v := range m1 {
+	for _, k := range keys(m1) {
 		if err := enc.WriteUstring(k); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
-		if err := enc.WriteInt(v); err != nil {
+		if err := enc.WriteInt(m1[k]); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
 	}
