@@ -9,7 +9,6 @@ import (
 type parser struct {
 	name  string
 	lexer *lexer
-	doc   *Doc
 
 	tokens    [2]token
 	peekCount int
@@ -43,10 +42,6 @@ func (p *parser) next() token {
 		p.tokens[0] = p.nextToken()
 	}
 	return p.tokens[p.peekCount]
-}
-
-func (p *parser) backup() {
-	p.peekCount++
 }
 
 func (p *parser) peek() token {
@@ -115,6 +110,9 @@ Loop:
 func (p *parser) parseInclude() (string, error) {
 	context := "include statement"
 	_, err := p.expect(tokenInclude, context)
+	if err != nil {
+		return "", err
+	}
 
 	t, err := p.expect(tokenString, context)
 	if err != nil {
@@ -182,7 +180,9 @@ func (p *parser) parseClass() (*Class, error) {
 		Name: t.val,
 	}
 
-	p.expect(tokenLBrace, context)
+	if _, err := p.expect(tokenLBrace, context); err != nil {
+		return nil, err
+	}
 
 	for {
 		t := p.peek()

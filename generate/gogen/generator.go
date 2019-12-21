@@ -66,7 +66,9 @@ func Generate(outDir string, files []*generate.File, opts *Options) error {
 
 	for _, file := range files {
 		for _, m := range file.Doc.Modules {
-			g.addModule(file.Path, m)
+			if err := g.addModule(file.Path, m); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -308,7 +310,7 @@ func (g *generator) serializeMethod(juteType parser.Type, fieldName string) (str
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "for _, v := range %s {\n", fieldName)
-		fmt.Fprintf(w, itemMethod)
+		fmt.Fprint(w, itemMethod)
 		fmt.Fprintf(w, "}\n") // end for loop
 		fmt.Fprintf(w, "if err := enc.WriteVectorEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
@@ -328,8 +330,8 @@ func (g *generator) serializeMethod(juteType parser.Type, fieldName string) (str
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "for k, v := range %s {\n", fieldName)
-		fmt.Fprintf(w, keyMethod)
-		fmt.Fprintf(w, valMethod)
+		fmt.Fprint(w, keyMethod)
+		fmt.Fprint(w, valMethod)
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "if err := enc.WriteMapEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
@@ -372,7 +374,7 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "\t%s = make(%s, size)\n", fieldName, itemType)
 		fmt.Fprintf(w, "\tfor i := 0; i < size; i++ {\n")
-		fmt.Fprintf(w, itemMethod)
+		fmt.Fprint(w, itemMethod)
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "if err = dec.ReadVectorEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
@@ -411,8 +413,8 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "var k%d %s\n", idx, keytype)
 		fmt.Fprintf(w, "var v%d %s\n", idx, valtype)
 		fmt.Fprintf(w, "for i := 0; i < size; i++ {\n")
-		fmt.Fprintf(w, keyMethod)
-		fmt.Fprintf(w, valMethod)
+		fmt.Fprint(w, keyMethod)
+		fmt.Fprint(w, valMethod)
 		fmt.Fprintf(w, "\t%s[k%d] = v%d\n", fieldName, idx, idx)
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "if err = dec.ReadMapEnd(); err != nil {\n")

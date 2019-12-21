@@ -24,7 +24,6 @@ import (
 // There is no header/tailer for the record itself.
 type BinaryEncoder struct {
 	w   *bufio.Writer
-	err error
 	buf [8]byte
 }
 
