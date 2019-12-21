@@ -84,9 +84,9 @@ type module struct {
 type class struct {
 	node *parser.Class
 
-	goName        string
-	importModules []string // jute modules required for import
-	fields        []*field
+	goName     string
+	extModules []string // external jute modules to determine import
+	fields     []*field
 }
 
 func (cls *class) hasContainers() bool {
@@ -141,8 +141,9 @@ func (g *generator) addModule(srcFilename string, node *parser.Module) error {
 				return err
 			}
 
-			if t, ok := fieldNode.Type.(*parser.ClassType); ok && t.Namespace != "" {
-				cls.importModules = append(cls.importModules, t.Namespace)
+			// record if there is a reference to another module
+			if ns := extNamespace(fieldNode.Type); ns != "" {
+				cls.extModules = append(cls.extModules, ns)
 			}
 
 			fld := &field{
@@ -183,8 +184,11 @@ func (g *generator) writeModule(m *module) error {
 		g.writeHeader(fw, m.srcFilename, m.goPkg.name, m.goPkg.importPath)
 
 		imports := []string{}
-		for _, imp := range cls.importModules {
-			pkg := g.moduleMap[imp]
+		for _, ns := range cls.extModules {
+			pkg, ok := g.moduleMap[ns]
+			if !ok {
+				panic("couldn't find import map for module namespace " + ns)
+			}
 			imports = append(imports, pkg.importPath)
 		}
 

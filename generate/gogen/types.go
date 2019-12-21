@@ -27,3 +27,19 @@ var primTypeName = map[parser.PTypeID]string{
 	parser.UStringTypeID: "Ustring",
 	parser.BufferTypeID:  "Buffer",
 }
+
+// returns the external namespaces for the given type resolving recusively for
+// map values and vector inner types.
+func extNamespace(typ parser.Type) string {
+	switch t := typ.(type) {
+	case *parser.ClassType:
+		return t.Namespace
+	case *parser.VectorType:
+		return extNamespace(t.Type)
+	// TODO(bbennett): Since we always use pointers for class references we
+	// don't really support external classes used as keys. Do we need this?
+	case *parser.MapType:
+		return extNamespace(t.ValType)
+	}
+	return ""
+}
