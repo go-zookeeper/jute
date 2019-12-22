@@ -91,7 +91,7 @@ func TestBinaryEncoderVector(t *testing.T) {
 	if err := enc.WriteStart(); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
-	if err := enc.WriteVectorStart(len(slice)); err != nil {
+	if err := enc.WriteVectorStart(len(slice), false); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
 

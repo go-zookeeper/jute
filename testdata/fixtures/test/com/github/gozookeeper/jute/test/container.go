@@ -24,11 +24,15 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.V = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.V[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.V = nil
+	} else {
+		r.V = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.V[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -68,7 +72,7 @@ func (r *Container) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.V)); err != nil {
+	if err := enc.WriteVectorStart(len(r.V), r.V == nil); err != nil {
 		return err
 	}
 	for _, v := range r.V {

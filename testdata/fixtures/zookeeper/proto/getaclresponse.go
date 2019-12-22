@@ -24,10 +24,14 @@ func (r *GetACLResponse) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Acl = make([]*data.ACL, size)
-	for i := 0; i < size; i++ {
-		if err = dec.ReadRecord(r.Acl[i]); err != nil {
-			return err
+	if size < 0 {
+		r.Acl = nil
+	} else {
+		r.Acl = make([]*data.ACL, size)
+		for i := 0; i < size; i++ {
+			if err = dec.ReadRecord(r.Acl[i]); err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -46,7 +50,7 @@ func (r *GetACLResponse) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.Acl)); err != nil {
+	if err := enc.WriteVectorStart(len(r.Acl), r.Acl == nil); err != nil {
 		return err
 	}
 	for _, v := range r.Acl {

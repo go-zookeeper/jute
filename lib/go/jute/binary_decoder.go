@@ -102,6 +102,10 @@ func (d *BinaryDecoder) ReadBuffer() ([]byte, error) {
 		return nil, err
 	}
 
+	if size < 0 {
+		return nil, nil
+	}
+
 	buf := make([]byte, int(size))
 	_, err = io.ReadFull(d.r, buf)
 	return buf, err

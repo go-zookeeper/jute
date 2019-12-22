@@ -38,10 +38,14 @@ func (r *QuorumPacket) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Authinfo = make([]*data.Id, size)
-	for i := 0; i < size; i++ {
-		if err = dec.ReadRecord(r.Authinfo[i]); err != nil {
-			return err
+	if size < 0 {
+		r.Authinfo = nil
+	} else {
+		r.Authinfo = make([]*data.Id, size)
+		for i := 0; i < size; i++ {
+			if err = dec.ReadRecord(r.Authinfo[i]); err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -66,7 +70,7 @@ func (r *QuorumPacket) Write(enc jute.Encoder) error {
 	if err := enc.WriteBuffer(r.Data); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.Authinfo)); err != nil {
+	if err := enc.WriteVectorStart(len(r.Authinfo), r.Authinfo == nil); err != nil {
 		return err
 	}
 	for _, v := range r.Authinfo {
