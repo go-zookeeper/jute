@@ -23,10 +23,14 @@ func (r *MultiTxn) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Txns = make([]*txn.Txn, size)
-	for i := 0; i < size; i++ {
-		if err = dec.ReadRecord(r.Txns[i]); err != nil {
-			return err
+	if size < 0 {
+		r.Txns = nil
+	} else {
+		r.Txns = make([]*txn.Txn, size)
+		for i := 0; i < size; i++ {
+			if err = dec.ReadRecord(r.Txns[i]); err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -42,7 +46,7 @@ func (r *MultiTxn) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.Txns)); err != nil {
+	if err := enc.WriteVectorStart(len(r.Txns), r.Txns == nil); err != nil {
 		return err
 	}
 	for _, v := range r.Txns {

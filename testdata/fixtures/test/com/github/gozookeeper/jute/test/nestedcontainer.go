@@ -75,11 +75,15 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 		if err != nil {
 			return err
 		}
-		v1 = make([]float64, size)
-		for i := 0; i < size; i++ {
-			v1[i], err = dec.ReadDouble()
-			if err != nil {
-				return err
+		if size < 0 {
+			v1 = nil
+		} else {
+			v1 = make([]float64, size)
+			for i := 0; i < size; i++ {
+				v1[i], err = dec.ReadDouble()
+				if err != nil {
+					return err
+				}
 			}
 		}
 		if err = dec.ReadVectorEnd(); err != nil {
@@ -94,31 +98,43 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.V1 = make([][][]int32, size)
-	for i := 0; i < size; i++ {
-		size, err = dec.ReadVectorStart()
-		if err != nil {
-			return err
-		}
-		r.V1[i] = make([][]int32, size)
+	if size < 0 {
+		r.V1 = nil
+	} else {
+		r.V1 = make([][][]int32, size)
 		for i := 0; i < size; i++ {
 			size, err = dec.ReadVectorStart()
 			if err != nil {
 				return err
 			}
-			r.V1[i][i] = make([]int32, size)
-			for i := 0; i < size; i++ {
-				r.V1[i][i][i], err = dec.ReadInt()
-				if err != nil {
-					return err
+			if size < 0 {
+				r.V1[i] = nil
+			} else {
+				r.V1[i] = make([][]int32, size)
+				for i := 0; i < size; i++ {
+					size, err = dec.ReadVectorStart()
+					if err != nil {
+						return err
+					}
+					if size < 0 {
+						r.V1[i][i] = nil
+					} else {
+						r.V1[i][i] = make([]int32, size)
+						for i := 0; i < size; i++ {
+							r.V1[i][i][i], err = dec.ReadInt()
+							if err != nil {
+								return err
+							}
+						}
+					}
+					if err = dec.ReadVectorEnd(); err != nil {
+						return err
+					}
 				}
 			}
 			if err = dec.ReadVectorEnd(); err != nil {
 				return err
 			}
-		}
-		if err = dec.ReadVectorEnd(); err != nil {
-			return err
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -128,27 +144,31 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.V2 = make([]map[int32]*Basic, size)
-	for i := 0; i < size; i++ {
-		size, err = dec.ReadMapStart()
-		if err != nil {
-			return err
-		}
-		r.V2[i] = make(map[int32]*Basic)
-		var k4 int32
-		var v4 *Basic
+	if size < 0 {
+		r.V2 = nil
+	} else {
+		r.V2 = make([]map[int32]*Basic, size)
 		for i := 0; i < size; i++ {
-			k4, err = dec.ReadInt()
+			size, err = dec.ReadMapStart()
 			if err != nil {
 				return err
 			}
-			if err = dec.ReadRecord(v4); err != nil {
+			r.V2[i] = make(map[int32]*Basic)
+			var k4 int32
+			var v4 *Basic
+			for i := 0; i < size; i++ {
+				k4, err = dec.ReadInt()
+				if err != nil {
+					return err
+				}
+				if err = dec.ReadRecord(v4); err != nil {
+					return err
+				}
+				r.V2[i][k4] = v4
+			}
+			if err = dec.ReadMapEnd(); err != nil {
 				return err
 			}
-			r.V2[i][k4] = v4
-		}
-		if err = dec.ReadMapEnd(); err != nil {
-			return err
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -196,7 +216,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 		if err := enc.WriteUstring(k); err != nil {
 			return err
 		}
-		if err := enc.WriteVectorStart(len(v)); err != nil {
+		if err := enc.WriteVectorStart(len(v), v == nil); err != nil {
 			return err
 		}
 		for _, v := range v {
@@ -211,15 +231,15 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 	if err := enc.WriteMapEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.V1)); err != nil {
+	if err := enc.WriteVectorStart(len(r.V1), r.V1 == nil); err != nil {
 		return err
 	}
 	for _, v := range r.V1 {
-		if err := enc.WriteVectorStart(len(v)); err != nil {
+		if err := enc.WriteVectorStart(len(v), v == nil); err != nil {
 			return err
 		}
 		for _, v := range v {
-			if err := enc.WriteVectorStart(len(v)); err != nil {
+			if err := enc.WriteVectorStart(len(v), v == nil); err != nil {
 				return err
 			}
 			for _, v := range v {
@@ -238,7 +258,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.V2)); err != nil {
+	if err := enc.WriteVectorStart(len(r.V2), r.V2 == nil); err != nil {
 		return err
 	}
 	for _, v := range r.V2 {

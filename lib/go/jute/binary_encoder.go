@@ -102,6 +102,9 @@ func (s *BinaryEncoder) WriteUstring(v string) error {
 // WriteBuffer will write any byte slice by first writing it's length as 4
 // bytes followed by the bytes in the slice.
 func (s *BinaryEncoder) WriteBuffer(v []byte) error {
+	if v == nil {
+		return s.WriteInt(-1)
+	}
 	if err := s.WriteInt(int32(len(v))); err != nil {
 		return err
 	}
@@ -111,7 +114,10 @@ func (s *BinaryEncoder) WriteBuffer(v []byte) error {
 
 // WriteVectorStart will write out the number of items in the vector as 4
 // bytes.  After calling WriteVectorStart the caller should write out each item.
-func (s *BinaryEncoder) WriteVectorStart(l int) error {
+func (s *BinaryEncoder) WriteVectorStart(l int, isNil bool) error {
+	if isNil {
+		return s.WriteInt(-1)
+	}
 	return s.WriteInt(int32(l))
 } // WriteString will write a utf8 encoded string by first writing it's length as
 

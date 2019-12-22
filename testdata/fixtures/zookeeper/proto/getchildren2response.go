@@ -24,11 +24,15 @@ func (r *GetChildren2Response) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Children = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.Children[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.Children = nil
+	} else {
+		r.Children = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.Children[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -47,7 +51,7 @@ func (r *GetChildren2Response) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.Children)); err != nil {
+	if err := enc.WriteVectorStart(len(r.Children), r.Children == nil); err != nil {
 		return err
 	}
 	for _, v := range r.Children {

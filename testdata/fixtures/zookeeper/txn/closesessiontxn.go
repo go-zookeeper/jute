@@ -22,11 +22,15 @@ func (r *CloseSessionTxn) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Paths2Delete = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.Paths2Delete[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.Paths2Delete = nil
+	} else {
+		r.Paths2Delete = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.Paths2Delete[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -42,7 +46,7 @@ func (r *CloseSessionTxn) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.Paths2Delete)); err != nil {
+	if err := enc.WriteVectorStart(len(r.Paths2Delete), r.Paths2Delete == nil); err != nil {
 		return err
 	}
 	for _, v := range r.Paths2Delete {

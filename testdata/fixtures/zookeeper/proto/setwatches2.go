@@ -31,11 +31,15 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.DataWatches = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.DataWatches[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.DataWatches = nil
+	} else {
+		r.DataWatches = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.DataWatches[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -45,11 +49,15 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.ExistWatches = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.ExistWatches[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.ExistWatches = nil
+	} else {
+		r.ExistWatches = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.ExistWatches[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -59,11 +67,15 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.ChildWatches = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.ChildWatches[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.ChildWatches = nil
+	} else {
+		r.ChildWatches = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.ChildWatches[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -73,11 +85,15 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.PersistentWatches = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.PersistentWatches[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.PersistentWatches = nil
+	} else {
+		r.PersistentWatches = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.PersistentWatches[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -87,11 +103,15 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.PersistentRecursiveWatches = make([]string, size)
-	for i := 0; i < size; i++ {
-		r.PersistentRecursiveWatches[i], err = dec.ReadUstring()
-		if err != nil {
-			return err
+	if size < 0 {
+		r.PersistentRecursiveWatches = nil
+	} else {
+		r.PersistentRecursiveWatches = make([]string, size)
+		for i := 0; i < size; i++ {
+			r.PersistentRecursiveWatches[i], err = dec.ReadUstring()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if err = dec.ReadVectorEnd(); err != nil {
@@ -110,7 +130,7 @@ func (r *SetWatches2) Write(enc jute.Encoder) error {
 	if err := enc.WriteLong(r.RelativeZxid); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.DataWatches)); err != nil {
+	if err := enc.WriteVectorStart(len(r.DataWatches), r.DataWatches == nil); err != nil {
 		return err
 	}
 	for _, v := range r.DataWatches {
@@ -121,7 +141,7 @@ func (r *SetWatches2) Write(enc jute.Encoder) error {
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.ExistWatches)); err != nil {
+	if err := enc.WriteVectorStart(len(r.ExistWatches), r.ExistWatches == nil); err != nil {
 		return err
 	}
 	for _, v := range r.ExistWatches {
@@ -132,7 +152,7 @@ func (r *SetWatches2) Write(enc jute.Encoder) error {
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.ChildWatches)); err != nil {
+	if err := enc.WriteVectorStart(len(r.ChildWatches), r.ChildWatches == nil); err != nil {
 		return err
 	}
 	for _, v := range r.ChildWatches {
@@ -143,7 +163,7 @@ func (r *SetWatches2) Write(enc jute.Encoder) error {
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.PersistentWatches)); err != nil {
+	if err := enc.WriteVectorStart(len(r.PersistentWatches), r.PersistentWatches == nil); err != nil {
 		return err
 	}
 	for _, v := range r.PersistentWatches {
@@ -154,7 +174,7 @@ func (r *SetWatches2) Write(enc jute.Encoder) error {
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteVectorStart(len(r.PersistentRecursiveWatches)); err != nil {
+	if err := enc.WriteVectorStart(len(r.PersistentRecursiveWatches), r.PersistentRecursiveWatches == nil); err != nil {
 		return err
 	}
 	for _, v := range r.PersistentRecursiveWatches {

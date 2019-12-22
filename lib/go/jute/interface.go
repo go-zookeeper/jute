@@ -26,7 +26,7 @@ type Encoder interface {
 	WriteUstring(string) error
 	WriteBuffer([]byte) error
 
-	WriteVectorStart(len int) error
+	WriteVectorStart(len int, isNil bool) error
 	WriteVectorEnd() error
 
 	WriteMapStart(len int) error

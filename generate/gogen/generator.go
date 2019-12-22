@@ -310,7 +310,7 @@ func (g *generator) serializeMethod(juteType parser.Type, fieldName string) (str
 			return "", err
 		}
 
-		fmt.Fprintf(w, "if err := enc.WriteVectorStart(len(%s)); err != nil {\n", fieldName)
+		fmt.Fprintf(w, "if err := enc.WriteVectorStart(len(%s), %s == nil); err != nil {\n", fieldName, fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "for _, v := range %s {\n", fieldName)
@@ -376,9 +376,13 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "if err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-		fmt.Fprintf(w, "\t%s = make(%s, size)\n", fieldName, itemType)
-		fmt.Fprintf(w, "\tfor i := 0; i < size; i++ {\n")
+		fmt.Fprintf(w, "\tif size < 0 {\n")
+		fmt.Fprintf(w, "\t\t%s = nil\n", fieldName)
+		fmt.Fprintf(w, "\t} else {\n")
+		fmt.Fprintf(w, "\t\t%s = make(%s, size)\n", fieldName, itemType)
+		fmt.Fprintf(w, "\t\tfor i := 0; i < size; i++ {\n")
 		fmt.Fprint(w, itemMethod)
+		fmt.Fprintf(w, "\t}\n")
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "if err = dec.ReadVectorEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
