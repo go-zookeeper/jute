@@ -10,7 +10,7 @@ import (
 )
 
 type CloseSessionTxn struct {
-	Paths2Delete []string // paths2Delete
+	Paths2Delete []*string // paths2Delete
 }
 
 func (r *CloseSessionTxn) Read(dec jute.Decoder) (err error) {
@@ -25,7 +25,7 @@ func (r *CloseSessionTxn) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Paths2Delete = nil
 	} else {
-		r.Paths2Delete = make([]string, size)
+		r.Paths2Delete = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.Paths2Delete[i], err = dec.ReadUstring()
 			if err != nil {

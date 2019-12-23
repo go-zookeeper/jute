@@ -10,7 +10,7 @@ import (
 )
 
 type GetEphemeralsResponse struct {
-	Ephemerals []string // ephemerals
+	Ephemerals []*string // ephemerals
 }
 
 func (r *GetEphemeralsResponse) Read(dec jute.Decoder) (err error) {
@@ -25,7 +25,7 @@ func (r *GetEphemeralsResponse) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Ephemerals = nil
 	} else {
-		r.Ephemerals = make([]string, size)
+		r.Ephemerals = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.Ephemerals[i], err = dec.ReadUstring()
 			if err != nil {

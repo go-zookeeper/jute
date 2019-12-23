@@ -10,8 +10,8 @@ import (
 )
 
 type GetChildrenRequest struct {
-	Path  string // path
-	Watch bool   // watch
+	Path  *string // path
+	Watch bool    // watch
 }
 
 func (r *GetChildrenRequest) Read(dec jute.Decoder) (err error) {

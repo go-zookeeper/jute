@@ -10,8 +10,8 @@ import (
 )
 
 type SetMaxChildrenTxn struct {
-	Path string // path
-	Max  int32  // max
+	Path *string // path
+	Max  int32   // max
 }
 
 func (r *SetMaxChildrenTxn) Read(dec jute.Decoder) (err error) {

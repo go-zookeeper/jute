@@ -10,7 +10,7 @@ import (
 )
 
 type Container struct {
-	V []string        // v
+	V []*string       // v
 	M map[int32]int32 // m
 	B *Basic          // b
 }
@@ -27,7 +27,7 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.V = nil
 	} else {
-		r.V = make([]string, size)
+		r.V = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.V[i], err = dec.ReadUstring()
 			if err != nil {

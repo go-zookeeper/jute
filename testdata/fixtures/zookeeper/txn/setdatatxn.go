@@ -10,9 +10,9 @@ import (
 )
 
 type SetDataTxn struct {
-	Path    string // path
-	Data    []byte // data
-	Version int32  // version
+	Path    *string // path
+	Data    []byte  // data
+	Version int32   // version
 }
 
 func (r *SetDataTxn) Read(dec jute.Decoder) (err error) {

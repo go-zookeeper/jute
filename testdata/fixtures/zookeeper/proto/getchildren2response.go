@@ -11,7 +11,7 @@ import (
 )
 
 type GetChildren2Response struct {
-	Children []string   // children
+	Children []*string  // children
 	Stat     *data.Stat // stat
 }
 
@@ -27,7 +27,7 @@ func (r *GetChildren2Response) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Children = nil
 	} else {
-		r.Children = make([]string, size)
+		r.Children = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.Children[i], err = dec.ReadUstring()
 			if err != nil {

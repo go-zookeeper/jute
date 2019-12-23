@@ -142,7 +142,7 @@ func (g *generator) addModule(srcFilename string, node *parser.Module) error {
 		}
 
 		for _, fieldNode := range classNode.Fields {
-			typ, err := g.goType(fieldNode.Type)
+			typ, err := g.goType(fieldNode.Type, false)
 			if err != nil {
 				return err
 			}
@@ -363,7 +363,7 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	case *parser.VectorType:
-		itemType, err := g.goType(juteType)
+		itemType, err := g.goType(juteType, false)
 		if err != nil {
 			return "", err
 		}
@@ -388,17 +388,22 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	case *parser.MapType:
-		mapType, err := g.goType(juteType)
+		mapType, err := g.goType(juteType, false)
 		if err != nil {
 			return "", err
 		}
 
-		keytype, err := g.goType(t.KeyType)
+		keytype, err := g.goType(t.KeyType, false)
 		if err != nil {
 			return "", err
 		}
 
-		valtype, err := g.goType(t.ValType)
+		var deref string
+		if strings.HasPrefix(keytype, "*") {
+			deref = "*"
+		}
+
+		valtype, err := g.goType(t.ValType, false)
 		if err != nil {
 			return "", err
 		}
@@ -422,8 +427,13 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "var v%d %s\n", idx, valtype)
 		fmt.Fprintf(w, "for i := 0; i < size; i++ {\n")
 		fmt.Fprint(w, keyMethod)
+		if deref != "" {
+			fmt.Fprintf(w, "if k%d == nil {\n", idx)
+			fmt.Fprint(w, "return jute.ErrNilKey\n")
+			fmt.Fprint(w, "}\n")
+		}
 		fmt.Fprint(w, valMethod)
-		fmt.Fprintf(w, "\t%s[k%d] = v%d\n", fieldName, idx, idx)
+		fmt.Fprintf(w, "\t%s[%sk%d] = v%d\n", fieldName, deref, idx, idx)
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "if err = dec.ReadMapEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
@@ -439,39 +449,45 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 }
 
 // goType will go type as string for the given jute ast type.
-func (g *generator) goType(juteType parser.Type) (string, error) {
+func (g *generator) goType(juteType parser.Type, noPtr bool) (string, error) {
 	switch t := juteType.(type) {
 	case *parser.PType:
 		if goType, ok := primaryTypeMap[t.TypeID]; ok {
+			if t.TypeID == parser.UStringTypeID && !noPtr {
+				return "*" + goType, nil
+			}
 			return goType, nil
 		}
 		return "", fmt.Errorf("unknown primative type %v", t.TypeID)
 
 	case *parser.VectorType:
-		innerType, err := g.goType(t.Type)
+		innerType, err := g.goType(t.Type, false)
 		if err != nil {
 			return "", err
 		}
 		return "[]" + innerType, nil
 
 	case *parser.MapType:
-		keyType, err := g.goType(t.KeyType)
+		keyType, err := g.goType(t.KeyType, true)
 		if err != nil {
 			return "", err
 		}
 
-		valType, err := g.goType(t.ValType)
+		valType, err := g.goType(t.ValType, false)
 		if err != nil {
 			return "", err
 		}
 
 		return "map[" + keyType + "]" + valType, nil
 	case *parser.ClassType:
-		var pkg string
-		if t.Namespace != "" {
-			pkg = g.moduleMap[t.Namespace].name + "."
+		var prefix string
+		if !noPtr {
+			prefix += "*"
 		}
-		return "*" + pkg + t.ClassName, nil
+		if t.Namespace != "" {
+			prefix += g.moduleMap[t.Namespace].name + "."
+		}
+		return prefix + t.ClassName, nil
 	}
 	return "", fmt.Errorf("unknown type %T", juteType)
 }

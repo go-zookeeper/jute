@@ -10,9 +10,9 @@ import (
 )
 
 type SetDataRequest struct {
-	Path    string // path
-	Data    []byte // data
-	Version int32  // version
+	Path    *string // path
+	Data    []byte  // data
+	Version int32   // version
 }
 
 func (r *SetDataRequest) Read(dec jute.Decoder) (err error) {

@@ -11,7 +11,7 @@ import (
 )
 
 type SetACLTxn struct {
-	Path    string      // path
+	Path    *string     // path
 	Acl     []*data.ACL // acl
 	Version int32       // version
 }

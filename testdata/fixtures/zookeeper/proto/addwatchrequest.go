@@ -10,8 +10,8 @@ import (
 )
 
 type AddWatchRequest struct {
-	Path string // path
-	Mode int32  // mode
+	Path *string // path
+	Mode int32   // mode
 }
 
 func (r *AddWatchRequest) Read(dec jute.Decoder) (err error) {

@@ -10,8 +10,8 @@ import (
 )
 
 type ExistsRequest struct {
-	Path  string // path
-	Watch bool   // watch
+	Path  *string // path
+	Watch bool    // watch
 }
 
 func (r *ExistsRequest) Read(dec jute.Decoder) (err error) {

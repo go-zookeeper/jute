@@ -11,7 +11,7 @@ import (
 )
 
 type CreateTTLRequest struct {
-	Path  string      // path
+	Path  *string     // path
 	Data  []byte      // data
 	Acl   []*data.ACL // acl
 	Flags int32       // flags

@@ -10,10 +10,10 @@ import (
 )
 
 type ReconfigRequest struct {
-	JoiningServers string // joiningServers
-	LeavingServers string // leavingServers
-	NewMembers     string // newMembers
-	CurConfigId    int64  // curConfigId
+	JoiningServers *string // joiningServers
+	LeavingServers *string // leavingServers
+	NewMembers     *string // newMembers
+	CurConfigId    int64   // curConfigId
 }
 
 func (r *ReconfigRequest) Read(dec jute.Decoder) (err error) {

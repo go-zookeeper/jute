@@ -10,7 +10,7 @@ import (
 )
 
 type GetACLRequest struct {
-	Path string // path
+	Path *string // path
 }
 
 func (r *GetACLRequest) Read(dec jute.Decoder) (err error) {

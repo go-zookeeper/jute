@@ -10,10 +10,10 @@ import (
 )
 
 type SetWatches struct {
-	RelativeZxid int64    // relativeZxid
-	DataWatches  []string // dataWatches
-	ExistWatches []string // existWatches
-	ChildWatches []string // childWatches
+	RelativeZxid int64     // relativeZxid
+	DataWatches  []*string // dataWatches
+	ExistWatches []*string // existWatches
+	ChildWatches []*string // childWatches
 }
 
 func (r *SetWatches) Read(dec jute.Decoder) (err error) {
@@ -32,7 +32,7 @@ func (r *SetWatches) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.DataWatches = nil
 	} else {
-		r.DataWatches = make([]string, size)
+		r.DataWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.DataWatches[i], err = dec.ReadUstring()
 			if err != nil {
@@ -50,7 +50,7 @@ func (r *SetWatches) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.ExistWatches = nil
 	} else {
-		r.ExistWatches = make([]string, size)
+		r.ExistWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.ExistWatches[i], err = dec.ReadUstring()
 			if err != nil {
@@ -68,7 +68,7 @@ func (r *SetWatches) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.ChildWatches = nil
 	} else {
-		r.ChildWatches = make([]string, size)
+		r.ChildWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.ChildWatches[i], err = dec.ReadUstring()
 			if err != nil {

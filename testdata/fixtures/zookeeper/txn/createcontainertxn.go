@@ -11,7 +11,7 @@ import (
 )
 
 type CreateContainerTxn struct {
-	Path           string      // path
+	Path           *string     // path
 	Data           []byte      // data
 	Acl            []*data.ACL // acl
 	ParentCVersion int32       // parentCVersion

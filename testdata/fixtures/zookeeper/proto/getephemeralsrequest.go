@@ -10,7 +10,7 @@ import (
 )
 
 type GetEphemeralsRequest struct {
-	PrefixPath string // prefixPath
+	PrefixPath *string // prefixPath
 }
 
 func (r *GetEphemeralsRequest) Read(dec jute.Decoder) (err error) {

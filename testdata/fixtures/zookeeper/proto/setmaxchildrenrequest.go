@@ -10,8 +10,8 @@ import (
 )
 
 type SetMaxChildrenRequest struct {
-	Path string // path
-	Max  int32  // max
+	Path *string // path
+	Max  int32   // max
 }
 
 func (r *SetMaxChildrenRequest) Read(dec jute.Decoder) (err error) {
