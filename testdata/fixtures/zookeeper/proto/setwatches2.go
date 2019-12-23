@@ -10,12 +10,12 @@ import (
 )
 
 type SetWatches2 struct {
-	RelativeZxid               int64    // relativeZxid
-	DataWatches                []string // dataWatches
-	ExistWatches               []string // existWatches
-	ChildWatches               []string // childWatches
-	PersistentWatches          []string // persistentWatches
-	PersistentRecursiveWatches []string // persistentRecursiveWatches
+	RelativeZxid               int64     // relativeZxid
+	DataWatches                []*string // dataWatches
+	ExistWatches               []*string // existWatches
+	ChildWatches               []*string // childWatches
+	PersistentWatches          []*string // persistentWatches
+	PersistentRecursiveWatches []*string // persistentRecursiveWatches
 }
 
 func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
@@ -34,7 +34,7 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.DataWatches = nil
 	} else {
-		r.DataWatches = make([]string, size)
+		r.DataWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.DataWatches[i], err = dec.ReadUstring()
 			if err != nil {
@@ -52,7 +52,7 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.ExistWatches = nil
 	} else {
-		r.ExistWatches = make([]string, size)
+		r.ExistWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.ExistWatches[i], err = dec.ReadUstring()
 			if err != nil {
@@ -70,7 +70,7 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.ChildWatches = nil
 	} else {
-		r.ChildWatches = make([]string, size)
+		r.ChildWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.ChildWatches[i], err = dec.ReadUstring()
 			if err != nil {
@@ -88,7 +88,7 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.PersistentWatches = nil
 	} else {
-		r.PersistentWatches = make([]string, size)
+		r.PersistentWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.PersistentWatches[i], err = dec.ReadUstring()
 			if err != nil {
@@ -106,7 +106,7 @@ func (r *SetWatches2) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.PersistentRecursiveWatches = nil
 	} else {
-		r.PersistentRecursiveWatches = make([]string, size)
+		r.PersistentRecursiveWatches = make([]*string, size)
 		for i := 0; i < size; i++ {
 			r.PersistentRecursiveWatches[i], err = dec.ReadUstring()
 			if err != nil {

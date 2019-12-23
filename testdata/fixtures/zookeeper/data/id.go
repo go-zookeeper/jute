@@ -10,8 +10,8 @@ import (
 )
 
 type Id struct {
-	Scheme string // scheme
-	Id     string // id
+	Scheme *string // scheme
+	Id     *string // id
 }
 
 func (r *Id) Read(dec jute.Decoder) (err error) {

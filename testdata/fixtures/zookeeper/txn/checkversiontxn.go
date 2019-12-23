@@ -10,8 +10,8 @@ import (
 )
 
 type CheckVersionTxn struct {
-	Path    string // path
-	Version int32  // version
+	Path    *string // path
+	Version int32   // version
 }
 
 func (r *CheckVersionTxn) Read(dec jute.Decoder) (err error) {

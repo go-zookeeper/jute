@@ -10,9 +10,9 @@ import (
 )
 
 type WatcherEvent struct {
-	Type  int32  // type
-	State int32  // state
-	Path  string // path
+	Type  int32   // type
+	State int32   // state
+	Path  *string // path
 }
 
 func (r *WatcherEvent) Read(dec jute.Decoder) (err error) {

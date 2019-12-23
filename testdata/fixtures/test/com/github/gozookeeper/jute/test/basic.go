@@ -16,7 +16,7 @@ type Basic struct {
 	L   int64   // l
 	F   float32 // f
 	D   float64 // d
-	S   string  // s
+	S   *string // s
 	Buf []byte  // buf
 }
 

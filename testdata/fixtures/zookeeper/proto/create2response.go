@@ -11,7 +11,7 @@ import (
 )
 
 type Create2Response struct {
-	Path string     // path
+	Path *string    // path
 	Stat *data.Stat // stat
 }
 

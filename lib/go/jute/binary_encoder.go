@@ -91,11 +91,15 @@ func (s *BinaryEncoder) WriteDouble(i float64) error {
 
 // WriteUstring will write a utf8 encoded string by first writing it's length as
 // 4 bytes and then the byte of the string.
-func (s *BinaryEncoder) WriteUstring(v string) error {
-	if err := s.WriteInt(int32(len(v))); err != nil {
+func (s *BinaryEncoder) WriteUstring(v *string) error {
+	if v == nil {
+		return s.WriteInt(-1)
+	}
+
+	if err := s.WriteInt(int32(len(*v))); err != nil {
 		return err
 	}
-	_, err := s.w.WriteString(v)
+	_, err := s.w.WriteString(*v)
 	return err
 }
 

@@ -38,18 +38,21 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 			return err
 		}
 		v0 = make(map[string]int32)
-		var k1 string
+		var k1 *string
 		var v1 int32
 		for i := 0; i < size; i++ {
 			k1, err = dec.ReadUstring()
 			if err != nil {
 				return err
 			}
+			if k1 == nil {
+				return jute.ErrNilKey
+			}
 			v1, err = dec.ReadInt()
 			if err != nil {
 				return err
 			}
-			v0[k1] = v1
+			v0[*k1] = v1
 		}
 		if err = dec.ReadMapEnd(); err != nil {
 			return err
@@ -64,12 +67,15 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 		return err
 	}
 	r.M2 = make(map[string][]float64)
-	var k1 string
+	var k1 *string
 	var v1 []float64
 	for i := 0; i < size; i++ {
 		k1, err = dec.ReadUstring()
 		if err != nil {
 			return err
+		}
+		if k1 == nil {
+			return jute.ErrNilKey
 		}
 		size, err = dec.ReadVectorStart()
 		if err != nil {
@@ -89,7 +95,7 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 		if err = dec.ReadVectorEnd(); err != nil {
 			return err
 		}
-		r.M2[k1] = v1
+		r.M2[*k1] = v1
 	}
 	if err = dec.ReadMapEnd(); err != nil {
 		return err

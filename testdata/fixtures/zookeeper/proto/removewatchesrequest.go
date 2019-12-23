@@ -10,8 +10,8 @@ import (
 )
 
 type RemoveWatchesRequest struct {
-	Path string // path
-	Type int32  // type
+	Path *string // path
+	Type int32   // type
 }
 
 func (r *RemoveWatchesRequest) Read(dec jute.Decoder) (err error) {

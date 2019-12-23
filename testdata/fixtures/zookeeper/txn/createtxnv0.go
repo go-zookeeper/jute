@@ -11,7 +11,7 @@ import (
 )
 
 type CreateTxnV0 struct {
-	Path      string      // path
+	Path      *string     // path
 	Data      []byte      // data
 	Acl       []*data.ACL // acl
 	Ephemeral bool        // ephemeral

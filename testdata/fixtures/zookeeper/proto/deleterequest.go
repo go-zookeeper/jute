@@ -10,8 +10,8 @@ import (
 )
 
 type DeleteRequest struct {
-	Path    string // path
-	Version int32  // version
+	Path    *string // path
+	Version int32   // version
 }
 
 func (r *DeleteRequest) Read(dec jute.Decoder) (err error) {

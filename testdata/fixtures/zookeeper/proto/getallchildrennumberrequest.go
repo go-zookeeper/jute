@@ -10,7 +10,7 @@ import (
 )
 
 type GetAllChildrenNumberRequest struct {
-	Path string // path
+	Path *string // path
 }
 
 func (r *GetAllChildrenNumberRequest) Read(dec jute.Decoder) (err error) {

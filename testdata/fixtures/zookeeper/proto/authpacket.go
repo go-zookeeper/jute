@@ -10,9 +10,9 @@ import (
 )
 
 type AuthPacket struct {
-	Type   int32  // type
-	Scheme string // scheme
-	Auth   []byte // auth
+	Type   int32   // type
+	Scheme *string // scheme
+	Auth   []byte  // auth
 }
 
 func (r *AuthPacket) Read(dec jute.Decoder) (err error) {

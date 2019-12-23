@@ -10,7 +10,7 @@ import (
 )
 
 type GetMaxChildrenRequest struct {
-	Path string // path
+	Path *string // path
 }
 
 func (r *GetMaxChildrenRequest) Read(dec jute.Decoder) (err error) {

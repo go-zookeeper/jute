@@ -10,7 +10,7 @@ import (
 )
 
 type CreateResponse struct {
-	Path string // path
+	Path *string // path
 }
 
 func (r *CreateResponse) Read(dec jute.Decoder) (err error) {

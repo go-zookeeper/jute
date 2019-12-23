@@ -10,7 +10,7 @@ import (
 )
 
 type SyncRequest struct {
-	Path string // path
+	Path *string // path
 }
 
 func (r *SyncRequest) Read(dec jute.Decoder) (err error) {
