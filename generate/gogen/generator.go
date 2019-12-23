@@ -36,6 +36,8 @@ func (m ModuleMap) String() string {
 
 }
 
+const DefaultJuteImport = "github.com/go-zookeeper/jute/lib/go/jute"
+
 // Options can be passed to Generate to modify the output.
 type Options struct {
 	// Base import path for generated packages
@@ -47,17 +49,19 @@ type Options struct {
 	ModuleMap []ModuleMap
 }
 
-func defaultOptions() *Options {
-	return &Options{
-		JuteImport: "github.com/go-zookeeper/jute/lib/go/jute",
+func (o *Options) normalize() {
+	if o.JuteImport == "" {
+		o.JuteImport = DefaultJuteImport
 	}
 }
 
 // Generate will generate Go packages/modules for the given input files.
 func Generate(outDir string, files []*generate.File, opts *Options) error {
 	if opts == nil {
-		opts = defaultOptions()
+		opts = &Options{}
 	}
+	opts.normalize()
+
 	g := &generator{
 		opts:      opts,
 		outDir:    outDir,
