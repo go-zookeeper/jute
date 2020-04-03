@@ -14,6 +14,13 @@ type SetACLResponse struct {
 	Stat *data.Stat // stat
 }
 
+func (r *SetACLResponse) GetStat() *data.Stat {
+	if r != nil && r.Stat != nil {
+		return r.Stat
+	}
+	return nil
+}
+
 func (r *SetACLResponse) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

@@ -80,7 +80,7 @@ func Generate(outDir string, files []*generate.File, opts *Options) error {
 }
 
 type module struct {
-	node *parser.Module // parsed module
+	node *parser.Module // ast module node
 
 	srcFilename string // abs path to source jute filename
 	goPkg       goPackage
@@ -88,7 +88,7 @@ type module struct {
 }
 
 type class struct {
-	node *parser.Class
+	node *parser.Class // ast class node
 
 	goName     string
 	extModules []string // external jute modules to determine import
@@ -106,9 +106,9 @@ func (cls *class) hasContainers() bool {
 }
 
 type field struct {
-	node   *parser.Field
+	node   *parser.Field // ast field node
 	goName string
-	goType string
+	goType *goType
 }
 
 type generator struct {
@@ -119,8 +119,8 @@ type generator struct {
 	moduleMap map[string]goPackage // map of jute module name to go import path
 }
 
-// Add module will add a module to the generator adding some
-// specific go metadata along the way.
+// addModule will add a module to the generator adding some specific go
+// metadata along the way.
 func (g *generator) addModule(srcFilename string, node *parser.Module) error {
 	goPkg, ok := g.goPkg(node.Name)
 	if !ok {
@@ -142,7 +142,7 @@ func (g *generator) addModule(srcFilename string, node *parser.Module) error {
 		}
 
 		for _, fieldNode := range classNode.Fields {
-			typ, err := g.goType(fieldNode.Type, false)
+			typ, err := g.convertType(fieldNode.Type)
 			if err != nil {
 				return err
 			}
@@ -162,7 +162,6 @@ func (g *generator) addModule(srcFilename string, node *parser.Module) error {
 		m.classes = append(m.classes, cls)
 	}
 
-	//	g.moduleMap[node.Name] = m.goImportPath
 	g.modules = append(g.modules, m)
 	return nil
 }
@@ -200,6 +199,7 @@ func (g *generator) writeModule(m *module) error {
 
 		g.writeImports(fw, imports)
 		g.writeClassStruct(fw, cls)
+		g.writeGetters(fw, cls)
 		g.writeReadMethod(fw, cls)
 		g.writeWriteMethod(fw, cls)
 		g.writeStringMethod(fw, cls)
@@ -240,6 +240,29 @@ func (g *generator) writeClassStruct(fw *fileWriter, cls *class) {
 	fw.printf("}\n\n")
 }
 
+func (g *generator) writeGetters(fw *fileWriter, cls *class) {
+	for _, fld := range cls.fields {
+		returnType := fld.goType.String()
+		var deref string
+		if fld.goType.isPtr && fld.goType.typeID != typeClass {
+			returnType = strings.TrimLeft(returnType, "*")
+			deref = "*"
+		}
+		fw.printf("func (r *%s) Get%s() %s {\n", cls.goName, fld.goName, returnType)
+
+		fw.printf("\tif r != nil ")
+		if fld.goType.isNillable() {
+			fw.printf("&& r.%s != nil ", fld.goName)
+		}
+		fw.printf("{\n")
+
+		fw.printf("\t\treturn %sr.%s", deref, fld.goName)
+		fw.printf("\t}\n")
+		fw.printf("return %s", fld.goType.zeroValue())
+		fw.printf("}\n\n")
+	}
+}
+
 func (g *generator) writeWriteMethod(fw *fileWriter, cls *class) {
 	fw.printf("func (r *%s) Write(enc jute.Encoder) error {\n", cls.goName)
 	fw.printf("\tif err := enc.WriteStart(); err != nil {\n")
@@ -247,7 +270,7 @@ func (g *generator) writeWriteMethod(fw *fileWriter, cls *class) {
 	fw.printf("\t}\n")
 
 	for _, fld := range cls.fields {
-		method, err := g.serializeMethod(fld.node.Type, "r."+fld.goName)
+		method, err := g.serializeMethod(fld.goType, "r."+fld.goName)
 		if err != nil {
 			panic(err)
 		}
@@ -255,7 +278,9 @@ func (g *generator) writeWriteMethod(fw *fileWriter, cls *class) {
 	}
 
 	fw.printf("\tif err := enc.WriteEnd(); err != nil {\n")
-	fw.printf("\t\treturn err\n")
+	{
+		fw.printf("\t\treturn err\n")
+	}
 	fw.printf("\t}\n")
 	fw.printf("\treturn nil\n")
 	fw.printf("}\n\n")
@@ -263,6 +288,7 @@ func (g *generator) writeWriteMethod(fw *fileWriter, cls *class) {
 
 func (g *generator) writeReadMethod(fw *fileWriter, cls *class) {
 	fw.printf("func (r *%s) Read(dec jute.Decoder) (err error) {\n", cls.goName)
+
 	// create a size variable if we have maps or vectors
 	if cls.hasContainers() {
 		fw.printf("\tvar size int\n")
@@ -271,7 +297,7 @@ func (g *generator) writeReadMethod(fw *fileWriter, cls *class) {
 	fw.printf("\t\treturn err\n")
 	fw.printf("\t}\n")
 	for i, fld := range cls.fields {
-		method, err := g.deserializeMethod(fld.node.Type, "r."+fld.goName, i)
+		method, err := g.deserializeMethod(fld.goType, "r."+fld.goName, i)
 		if err != nil {
 			panic(err)
 		}
@@ -293,19 +319,19 @@ func (g *generator) writeStringMethod(fw *fileWriter, cls *class) {
 	fw.printf("\t}\n\n")
 }
 
-func (g *generator) serializeMethod(juteType parser.Type, fieldName string) (string, error) {
+func (g *generator) serializeMethod(typ *goType, fieldName string) (string, error) {
 	w := &strings.Builder{}
-	switch t := juteType.(type) {
-	case *parser.PType:
-		typeName, ok := primTypeName[t.TypeID]
-		if !ok {
-			return "", fmt.Errorf("unknown primative type: %v", t.TypeID)
+	switch {
+	case typ.isPrimative():
+		var ref string
+		if !typ.isPtr && typ.typeID == typeString {
+			ref = "&"
 		}
-		fmt.Fprintf(w, "if err := enc.Write%s(%s); err != nil {\n", typeName, fieldName)
+		fmt.Fprintf(w, "if err := enc.Write%s(%s%s); err != nil {\n", typ.methodSuffix(), ref, fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-	case *parser.VectorType:
-		itemMethod, err := g.serializeMethod(t.Type, "v")
+	case typ.typeID == typeSlice:
+		itemMethod, err := g.serializeMethod(typ.inner1, "v")
 		if err != nil {
 			return "", err
 		}
@@ -319,13 +345,13 @@ func (g *generator) serializeMethod(juteType parser.Type, fieldName string) (str
 		fmt.Fprintf(w, "if err := enc.WriteVectorEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-	case *parser.MapType:
-		keyMethod, err := g.serializeMethod(t.KeyType, "k")
+	case typ.typeID == typeMap:
+		keyMethod, err := g.serializeMethod(typ.inner1, "k")
 		if err != nil {
 			return "", err
 		}
 
-		valMethod, err := g.serializeMethod(t.ValType, "v")
+		valMethod, err := g.serializeMethod(typ.inner2, "v")
 		if err != nil {
 			return "", err
 		}
@@ -340,34 +366,43 @@ func (g *generator) serializeMethod(juteType parser.Type, fieldName string) (str
 		fmt.Fprintf(w, "if err := enc.WriteMapEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-	case *parser.ClassType:
-		fmt.Fprintf(w, "if err := enc.WriteRecord(%s); err != nil {\n", fieldName)
+	case typ.typeID == typeClass:
+		var ref string
+		if !typ.isPtr {
+			ref = "&"
+		}
+		fmt.Fprintf(w, "if err := enc.WriteRecord(%s%s); err != nil {\n", ref, fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	default:
-		return "", fmt.Errorf("unknown type %T for field %s", t, fieldName)
+		return "", fmt.Errorf("unknown type %T for field %s", typ, fieldName)
 	}
 	return w.String(), nil
 }
 
-func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, idx int) (string, error) {
+func (g *generator) deserializeMethod(typ *goType, fieldName string, idx int) (string, error) {
 	w := &strings.Builder{}
-	switch t := juteType.(type) {
-	case *parser.PType:
-		typeName, ok := primTypeName[t.TypeID]
-		if !ok {
-			return "", fmt.Errorf("unknown primative type: %v", t.TypeID)
+	switch {
+	case typ.isPrimative():
+		// for strings we may need to dereference a pointer
+		if !typ.isPtr && typ.typeID == typeString {
+			fmt.Fprintf(w, "s%d, err := dec.ReadString()\n", idx)
+			fmt.Fprintf(w, "if err != nil {\n")
+			fmt.Fprintf(w, "\treturn err\n")
+			fmt.Fprintf(w, "}\n")
+			fmt.Fprintf(w, "if s%d == nil {\n", idx)
+			fmt.Fprintf(w, "\t%s = \"\"\n", fieldName)
+			fmt.Fprintf(w, "} else {\n")
+			fmt.Fprintf(w, "\t%s = *s%d\n", fieldName, idx)
+			fmt.Fprintf(w, "}\n")
+		} else {
+			fmt.Fprintf(w, "%s, err = dec.Read%s()\n", fieldName, typ.methodSuffix())
+			fmt.Fprintf(w, "if err != nil {\n")
+			fmt.Fprintf(w, "\treturn err\n")
+			fmt.Fprintf(w, "}\n")
 		}
-		fmt.Fprintf(w, "%s, err = dec.Read%s()\n", fieldName, typeName)
-		fmt.Fprintf(w, "if err != nil {\n")
-		fmt.Fprintf(w, "\treturn err\n")
-		fmt.Fprintf(w, "}\n")
-	case *parser.VectorType:
-		itemType, err := g.goType(juteType, false)
-		if err != nil {
-			return "", err
-		}
-		itemMethod, err := g.deserializeMethod(t.Type, fmt.Sprintf("%s[i]", fieldName), idx+1)
+	case typ.typeID == typeSlice:
+		itemMethod, err := g.deserializeMethod(typ.inner1, fmt.Sprintf("%s[i]", fieldName), idx+1)
 		if err != nil {
 			return "", err
 		}
@@ -379,7 +414,7 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "\tif size < 0 {\n")
 		fmt.Fprintf(w, "\t\t%s = nil\n", fieldName)
 		fmt.Fprintf(w, "\t} else {\n")
-		fmt.Fprintf(w, "\t\t%s = make(%s, size)\n", fieldName, itemType)
+		fmt.Fprintf(w, "\t\t%s = make(%s, size)\n", fieldName, typ.String())
 		fmt.Fprintf(w, "\t\tfor i := 0; i < size; i++ {\n")
 		fmt.Fprint(w, itemMethod)
 		fmt.Fprintf(w, "\t}\n")
@@ -387,33 +422,13 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "if err = dec.ReadVectorEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-	case *parser.MapType:
-		mapType, err := g.goType(juteType, false)
+	case typ.typeID == typeMap:
+		keyMethod, err := g.deserializeMethod(typ.inner1, fmt.Sprintf("k%d", idx), idx+1)
 		if err != nil {
 			return "", err
 		}
 
-		keytype, err := g.goType(t.KeyType, false)
-		if err != nil {
-			return "", err
-		}
-
-		var deref string
-		if strings.HasPrefix(keytype, "*") {
-			deref = "*"
-		}
-
-		valtype, err := g.goType(t.ValType, false)
-		if err != nil {
-			return "", err
-		}
-
-		keyMethod, err := g.deserializeMethod(t.KeyType, fmt.Sprintf("k%d", idx), idx+1)
-		if err != nil {
-			return "", err
-		}
-
-		valMethod, err := g.deserializeMethod(t.ValType, fmt.Sprintf("v%d", idx), idx+1)
+		valMethod, err := g.deserializeMethod(typ.inner2, fmt.Sprintf("v%d", idx), idx+1)
 		if err != nil {
 			return "", err
 		}
@@ -422,74 +437,29 @@ func (g *generator) deserializeMethod(juteType parser.Type, fieldName string, id
 		fmt.Fprintf(w, "if err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-		fmt.Fprintf(w, "%s = make(%s)\n", fieldName, mapType)
-		fmt.Fprintf(w, "var k%d %s\n", idx, keytype)
-		fmt.Fprintf(w, "var v%d %s\n", idx, valtype)
+		fmt.Fprintf(w, "%s = make(%s)\n", fieldName, typ)
+		fmt.Fprintf(w, "var k%d %s\n", idx, typ.inner1)
+		fmt.Fprintf(w, "var v%d %s\n", idx, typ.inner2)
 		fmt.Fprintf(w, "for i := 0; i < size; i++ {\n")
 		fmt.Fprint(w, keyMethod)
-		if deref != "" {
-			fmt.Fprintf(w, "if k%d == nil {\n", idx)
-			fmt.Fprint(w, "return jute.ErrNilKey\n")
-			fmt.Fprint(w, "}\n")
-		}
 		fmt.Fprint(w, valMethod)
-		fmt.Fprintf(w, "\t%s[%sk%d] = v%d\n", fieldName, deref, idx, idx)
+		fmt.Fprintf(w, "\t%s[%sk%d] = v%d\n", fieldName, "", idx, idx)
 		fmt.Fprintf(w, "}\n")
 		fmt.Fprintf(w, "if err = dec.ReadMapEnd(); err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
-	case *parser.ClassType:
-		fmt.Fprintf(w, "if err = dec.ReadRecord(%s); err != nil {\n", fieldName)
+	case typ.typeID == typeClass:
+		var ref string
+		if !typ.isPtr {
+			ref = "&"
+		}
+		fmt.Fprintf(w, "if err = dec.ReadRecord(%s%s); err != nil {\n", ref, fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	default:
-		return "", fmt.Errorf("unknown type %T for field %s", t, fieldName)
+		return "", fmt.Errorf("unknown type %T for field %s", typ, fieldName)
 	}
 	return w.String(), nil
-}
-
-// goType will go type as string for the given jute ast type.
-func (g *generator) goType(juteType parser.Type, noPtr bool) (string, error) {
-	switch t := juteType.(type) {
-	case *parser.PType:
-		if goType, ok := primaryTypeMap[t.TypeID]; ok {
-			if t.TypeID == parser.UStringTypeID && !noPtr {
-				return "*" + goType, nil
-			}
-			return goType, nil
-		}
-		return "", fmt.Errorf("unknown primative type %v", t.TypeID)
-
-	case *parser.VectorType:
-		innerType, err := g.goType(t.Type, false)
-		if err != nil {
-			return "", err
-		}
-		return "[]" + innerType, nil
-
-	case *parser.MapType:
-		keyType, err := g.goType(t.KeyType, true)
-		if err != nil {
-			return "", err
-		}
-
-		valType, err := g.goType(t.ValType, false)
-		if err != nil {
-			return "", err
-		}
-
-		return "map[" + keyType + "]" + valType, nil
-	case *parser.ClassType:
-		var prefix string
-		if !noPtr {
-			prefix += "*"
-		}
-		if t.Namespace != "" {
-			prefix += g.moduleMap[t.Namespace].name + "."
-		}
-		return prefix + t.ClassName, nil
-	}
-	return "", fmt.Errorf("unknown type %T", juteType)
 }
 
 func camelcase(ident string) string {

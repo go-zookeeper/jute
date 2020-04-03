@@ -18,12 +18,47 @@ type CreateTTLRequest struct {
 	Ttl   int64       // ttl
 }
 
+func (r *CreateTTLRequest) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *CreateTTLRequest) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
+func (r *CreateTTLRequest) GetAcl() []*data.ACL {
+	if r != nil && r.Acl != nil {
+		return r.Acl
+	}
+	return nil
+}
+
+func (r *CreateTTLRequest) GetFlags() int32 {
+	if r != nil {
+		return r.Flags
+	}
+	return 0
+}
+
+func (r *CreateTTLRequest) GetTtl() int64 {
+	if r != nil {
+		return r.Ttl
+	}
+	return 0
+}
+
 func (r *CreateTTLRequest) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -66,7 +101,7 @@ func (r *CreateTTLRequest) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteBuffer(r.Data); err != nil {

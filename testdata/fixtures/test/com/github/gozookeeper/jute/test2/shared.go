@@ -13,6 +13,13 @@ type Shared struct {
 	I int32 // i
 }
 
+func (r *Shared) GetI() int32 {
+	if r != nil {
+		return r.I
+	}
+	return 0
+}
+
 func (r *Shared) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

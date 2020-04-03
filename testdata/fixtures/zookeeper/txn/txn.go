@@ -14,6 +14,20 @@ type Txn struct {
 	Data []byte // data
 }
 
+func (r *Txn) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
+func (r *Txn) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
 func (r *Txn) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

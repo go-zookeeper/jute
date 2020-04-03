@@ -17,6 +17,41 @@ type ConnectRequest struct {
 	Passwd          []byte // passwd
 }
 
+func (r *ConnectRequest) GetProtocolVersion() int32 {
+	if r != nil {
+		return r.ProtocolVersion
+	}
+	return 0
+}
+
+func (r *ConnectRequest) GetLastZxidSeen() int64 {
+	if r != nil {
+		return r.LastZxidSeen
+	}
+	return 0
+}
+
+func (r *ConnectRequest) GetTimeOut() int32 {
+	if r != nil {
+		return r.TimeOut
+	}
+	return 0
+}
+
+func (r *ConnectRequest) GetSessionId() int64 {
+	if r != nil {
+		return r.SessionId
+	}
+	return 0
+}
+
+func (r *ConnectRequest) GetPasswd() []byte {
+	if r != nil && r.Passwd != nil {
+		return r.Passwd
+	}
+	return nil
+}
+
 func (r *ConnectRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

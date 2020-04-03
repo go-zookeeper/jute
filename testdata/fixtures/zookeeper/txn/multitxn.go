@@ -14,6 +14,13 @@ type MultiTxn struct {
 	Txns []*txn.Txn // txns
 }
 
+func (r *MultiTxn) GetTxns() []*txn.Txn {
+	if r != nil && r.Txns != nil {
+		return r.Txns
+	}
+	return nil
+}
+
 func (r *MultiTxn) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {

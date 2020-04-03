@@ -89,9 +89,9 @@ func (s *BinaryEncoder) WriteDouble(i float64) error {
 	return s.WriteLong(int64(math.Float64bits(i)))
 }
 
-// WriteUstring will write a utf8 encoded string by first writing it's length as
+// WriteString will write a utf8 encoded string by first writing it's length as
 // 4 bytes and then the byte of the string.
-func (s *BinaryEncoder) WriteUstring(v *string) error {
+func (s *BinaryEncoder) WriteString(v *string) error {
 	if v == nil {
 		return s.WriteInt(-1)
 	}

@@ -14,11 +14,25 @@ type CheckWatchesRequest struct {
 	Type int32   // type
 }
 
+func (r *CheckWatchesRequest) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *CheckWatchesRequest) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
 func (r *CheckWatchesRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -36,7 +50,7 @@ func (r *CheckWatchesRequest) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteInt(r.Type); err != nil {

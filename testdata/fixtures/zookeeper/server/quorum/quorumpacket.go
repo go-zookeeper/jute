@@ -17,6 +17,34 @@ type QuorumPacket struct {
 	Authinfo []*data.Id // authinfo
 }
 
+func (r *QuorumPacket) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
+func (r *QuorumPacket) GetZxid() int64 {
+	if r != nil {
+		return r.Zxid
+	}
+	return 0
+}
+
+func (r *QuorumPacket) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
+func (r *QuorumPacket) GetAuthinfo() []*data.Id {
+	if r != nil && r.Authinfo != nil {
+		return r.Authinfo
+	}
+	return nil
+}
+
 func (r *QuorumPacket) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {

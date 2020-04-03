@@ -10,7 +10,14 @@ import (
 )
 
 type GetEphemeralsResponse struct {
-	Ephemerals []*string // ephemerals
+	Ephemerals []string // ephemerals
+}
+
+func (r *GetEphemeralsResponse) GetEphemerals() []string {
+	if r != nil && r.Ephemerals != nil {
+		return r.Ephemerals
+	}
+	return nil
 }
 
 func (r *GetEphemeralsResponse) Read(dec jute.Decoder) (err error) {
@@ -25,11 +32,16 @@ func (r *GetEphemeralsResponse) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Ephemerals = nil
 	} else {
-		r.Ephemerals = make([]*string, size)
+		r.Ephemerals = make([]string, size)
 		for i := 0; i < size; i++ {
-			r.Ephemerals[i], err = dec.ReadUstring()
+			s1, err := dec.ReadString()
 			if err != nil {
 				return err
+			}
+			if s1 == nil {
+				r.Ephemerals[i] = ""
+			} else {
+				r.Ephemerals[i] = *s1
 			}
 		}
 	}
@@ -50,7 +62,7 @@ func (r *GetEphemeralsResponse) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Ephemerals {
-		if err := enc.WriteUstring(v); err != nil {
+		if err := enc.WriteString(&v); err != nil {
 			return err
 		}
 	}

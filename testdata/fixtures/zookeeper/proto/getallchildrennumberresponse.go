@@ -13,6 +13,13 @@ type GetAllChildrenNumberResponse struct {
 	TotalNumber int32 // totalNumber
 }
 
+func (r *GetAllChildrenNumberResponse) GetTotalNumber() int32 {
+	if r != nil {
+		return r.TotalNumber
+	}
+	return 0
+}
+
 func (r *GetAllChildrenNumberResponse) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

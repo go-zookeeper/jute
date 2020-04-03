@@ -21,6 +21,69 @@ type StatPersisted struct {
 	Pzxid          int64 // pzxid
 }
 
+func (r *StatPersisted) GetCzxid() int64 {
+	if r != nil {
+		return r.Czxid
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetMzxid() int64 {
+	if r != nil {
+		return r.Mzxid
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetCtime() int64 {
+	if r != nil {
+		return r.Ctime
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetMtime() int64 {
+	if r != nil {
+		return r.Mtime
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetVersion() int32 {
+	if r != nil {
+		return r.Version
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetCversion() int32 {
+	if r != nil {
+		return r.Cversion
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetAversion() int32 {
+	if r != nil {
+		return r.Aversion
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetEphemeralOwner() int64 {
+	if r != nil {
+		return r.EphemeralOwner
+	}
+	return 0
+}
+
+func (r *StatPersisted) GetPzxid() int64 {
+	if r != nil {
+		return r.Pzxid
+	}
+	return 0
+}
+
 func (r *StatPersisted) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

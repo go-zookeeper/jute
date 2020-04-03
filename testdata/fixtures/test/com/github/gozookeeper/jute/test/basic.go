@@ -20,6 +20,62 @@ type Basic struct {
 	Buf []byte  // buf
 }
 
+func (r *Basic) GetB() bool {
+	if r != nil {
+		return r.B
+	}
+	return false
+}
+
+func (r *Basic) GetP() byte {
+	if r != nil {
+		return r.P
+	}
+	return 0
+}
+
+func (r *Basic) GetI() int32 {
+	if r != nil {
+		return r.I
+	}
+	return 0
+}
+
+func (r *Basic) GetL() int64 {
+	if r != nil {
+		return r.L
+	}
+	return 0
+}
+
+func (r *Basic) GetF() float32 {
+	if r != nil {
+		return r.F
+	}
+	return 0
+}
+
+func (r *Basic) GetD() float64 {
+	if r != nil {
+		return r.D
+	}
+	return 0
+}
+
+func (r *Basic) GetS() string {
+	if r != nil && r.S != nil {
+		return *r.S
+	}
+	return ""
+}
+
+func (r *Basic) GetBuf() []byte {
+	if r != nil && r.Buf != nil {
+		return r.Buf
+	}
+	return nil
+}
+
 func (r *Basic) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
@@ -48,7 +104,7 @@ func (r *Basic) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.S, err = dec.ReadUstring()
+	r.S, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -84,7 +140,7 @@ func (r *Basic) Write(enc jute.Encoder) error {
 	if err := enc.WriteDouble(r.D); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.S); err != nil {
+	if err := enc.WriteString(r.S); err != nil {
 		return err
 	}
 	if err := enc.WriteBuffer(r.Buf); err != nil {

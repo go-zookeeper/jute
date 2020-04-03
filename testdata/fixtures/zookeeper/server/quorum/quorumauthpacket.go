@@ -15,6 +15,27 @@ type QuorumAuthPacket struct {
 	Token  []byte // token
 }
 
+func (r *QuorumAuthPacket) GetMagic() int64 {
+	if r != nil {
+		return r.Magic
+	}
+	return 0
+}
+
+func (r *QuorumAuthPacket) GetStatus() int32 {
+	if r != nil {
+		return r.Status
+	}
+	return 0
+}
+
+func (r *QuorumAuthPacket) GetToken() []byte {
+	if r != nil && r.Token != nil {
+		return r.Token
+	}
+	return nil
+}
+
 func (r *QuorumAuthPacket) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

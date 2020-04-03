@@ -13,6 +13,13 @@ type ErrorResponse struct {
 	Err int32 // err
 }
 
+func (r *ErrorResponse) GetErr() int32 {
+	if r != nil {
+		return r.Err
+	}
+	return 0
+}
+
 func (r *ErrorResponse) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

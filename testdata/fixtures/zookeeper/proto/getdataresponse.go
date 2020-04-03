@@ -15,6 +15,20 @@ type GetDataResponse struct {
 	Stat *data.Stat // stat
 }
 
+func (r *GetDataResponse) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
+func (r *GetDataResponse) GetStat() *data.Stat {
+	if r != nil && r.Stat != nil {
+		return r.Stat
+	}
+	return nil
+}
+
 func (r *GetDataResponse) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

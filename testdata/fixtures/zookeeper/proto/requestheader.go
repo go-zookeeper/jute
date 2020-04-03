@@ -14,6 +14,20 @@ type RequestHeader struct {
 	Type int32 // type
 }
 
+func (r *RequestHeader) GetXid() int32 {
+	if r != nil {
+		return r.Xid
+	}
+	return 0
+}
+
+func (r *RequestHeader) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
 func (r *RequestHeader) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

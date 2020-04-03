@@ -15,6 +15,27 @@ type LearnerInfo struct {
 	ConfigVersion   int64 // configVersion
 }
 
+func (r *LearnerInfo) GetServerid() int64 {
+	if r != nil {
+		return r.Serverid
+	}
+	return 0
+}
+
+func (r *LearnerInfo) GetProtocolVersion() int32 {
+	if r != nil {
+		return r.ProtocolVersion
+	}
+	return 0
+}
+
+func (r *LearnerInfo) GetConfigVersion() int64 {
+	if r != nil {
+		return r.ConfigVersion
+	}
+	return 0
+}
+
 func (r *LearnerInfo) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

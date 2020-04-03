@@ -16,12 +16,33 @@ type SetACLTxn struct {
 	Version int32       // version
 }
 
+func (r *SetACLTxn) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *SetACLTxn) GetAcl() []*data.ACL {
+	if r != nil && r.Acl != nil {
+		return r.Acl
+	}
+	return nil
+}
+
+func (r *SetACLTxn) GetVersion() int32 {
+	if r != nil {
+		return r.Version
+	}
+	return 0
+}
+
 func (r *SetACLTxn) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -56,7 +77,7 @@ func (r *SetACLTxn) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteVectorStart(len(r.Acl), r.Acl == nil); err != nil {

@@ -18,12 +18,47 @@ type CreateTTLTxn struct {
 	Ttl            int64       // ttl
 }
 
+func (r *CreateTTLTxn) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *CreateTTLTxn) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
+func (r *CreateTTLTxn) GetAcl() []*data.ACL {
+	if r != nil && r.Acl != nil {
+		return r.Acl
+	}
+	return nil
+}
+
+func (r *CreateTTLTxn) GetParentCVersion() int32 {
+	if r != nil {
+		return r.ParentCVersion
+	}
+	return 0
+}
+
+func (r *CreateTTLTxn) GetTtl() int64 {
+	if r != nil {
+		return r.Ttl
+	}
+	return 0
+}
+
 func (r *CreateTTLTxn) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -66,7 +101,7 @@ func (r *CreateTTLTxn) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteBuffer(r.Data); err != nil {

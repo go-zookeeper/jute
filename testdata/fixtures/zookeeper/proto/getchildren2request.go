@@ -14,11 +14,25 @@ type GetChildren2Request struct {
 	Watch bool    // watch
 }
 
+func (r *GetChildren2Request) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *GetChildren2Request) GetWatch() bool {
+	if r != nil {
+		return r.Watch
+	}
+	return false
+}
+
 func (r *GetChildren2Request) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -36,7 +50,7 @@ func (r *GetChildren2Request) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteBoolean(r.Watch); err != nil {
