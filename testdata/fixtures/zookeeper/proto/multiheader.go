@@ -15,6 +15,27 @@ type MultiHeader struct {
 	Err  int32 // err
 }
 
+func (r *MultiHeader) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
+func (r *MultiHeader) GetDone() bool {
+	if r != nil {
+		return r.Done
+	}
+	return false
+}
+
+func (r *MultiHeader) GetErr() int32 {
+	if r != nil {
+		return r.Err
+	}
+	return 0
+}
+
 func (r *MultiHeader) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

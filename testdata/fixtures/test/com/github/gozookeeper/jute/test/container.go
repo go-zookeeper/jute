@@ -10,9 +10,38 @@ import (
 )
 
 type Container struct {
-	V []*string       // v
-	M map[int32]int32 // m
-	B *Basic          // b
+	V  []string          // v
+	M1 map[string]string // m1
+	M2 map[int32]int32   // m2
+	B  *Basic            // b
+}
+
+func (r *Container) GetV() []string {
+	if r != nil && r.V != nil {
+		return r.V
+	}
+	return nil
+}
+
+func (r *Container) GetM1() map[string]string {
+	if r != nil && r.M1 != nil {
+		return r.M1
+	}
+	return nil
+}
+
+func (r *Container) GetM2() map[int32]int32 {
+	if r != nil && r.M2 != nil {
+		return r.M2
+	}
+	return nil
+}
+
+func (r *Container) GetB() *Basic {
+	if r != nil && r.B != nil {
+		return r.B
+	}
+	return nil
 }
 
 func (r *Container) Read(dec jute.Decoder) (err error) {
@@ -27,11 +56,16 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.V = nil
 	} else {
-		r.V = make([]*string, size)
+		r.V = make([]string, size)
 		for i := 0; i < size; i++ {
-			r.V[i], err = dec.ReadUstring()
+			s1, err := dec.ReadString()
 			if err != nil {
 				return err
+			}
+			if s1 == nil {
+				r.V[i] = ""
+			} else {
+				r.V[i] = *s1
 			}
 		}
 	}
@@ -42,19 +76,50 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.M = make(map[int32]int32)
-	var k1 int32
-	var v1 int32
+	r.M1 = make(map[string]string)
+	var k1 string
+	var v1 string
 	for i := 0; i < size; i++ {
-		k1, err = dec.ReadInt()
+		s2, err := dec.ReadString()
 		if err != nil {
 			return err
 		}
-		v1, err = dec.ReadInt()
+		if s2 == nil {
+			k1 = ""
+		} else {
+			k1 = *s2
+		}
+		s2, err := dec.ReadString()
 		if err != nil {
 			return err
 		}
-		r.M[k1] = v1
+		if s2 == nil {
+			v1 = ""
+		} else {
+			v1 = *s2
+		}
+		r.M1[k1] = v1
+	}
+	if err = dec.ReadMapEnd(); err != nil {
+		return err
+	}
+	size, err = dec.ReadMapStart()
+	if err != nil {
+		return err
+	}
+	r.M2 = make(map[int32]int32)
+	var k2 int32
+	var v2 int32
+	for i := 0; i < size; i++ {
+		k2, err = dec.ReadInt()
+		if err != nil {
+			return err
+		}
+		v2, err = dec.ReadInt()
+		if err != nil {
+			return err
+		}
+		r.M2[k2] = v2
 	}
 	if err = dec.ReadMapEnd(); err != nil {
 		return err
@@ -76,17 +141,31 @@ func (r *Container) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.V {
-		if err := enc.WriteUstring(v); err != nil {
+		if err := enc.WriteString(&v); err != nil {
 			return err
 		}
 	}
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteMapStart(len(r.M)); err != nil {
+	if err := enc.WriteMapStart(len(r.M1)); err != nil {
 		return err
 	}
-	for k, v := range r.M {
+	for k, v := range r.M1 {
+		if err := enc.WriteString(&k); err != nil {
+			return err
+		}
+		if err := enc.WriteString(&v); err != nil {
+			return err
+		}
+	}
+	if err := enc.WriteMapEnd(); err != nil {
+		return err
+	}
+	if err := enc.WriteMapStart(len(r.M2)); err != nil {
+		return err
+	}
+	for k, v := range r.M2 {
 		if err := enc.WriteInt(k); err != nil {
 			return err
 		}

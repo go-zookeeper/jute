@@ -15,6 +15,20 @@ type External struct {
 	SharedMap map[int32]*test.Shared // sharedMap
 }
 
+func (r *External) GetShared() *test.Shared {
+	if r != nil && r.Shared != nil {
+		return r.Shared
+	}
+	return nil
+}
+
+func (r *External) GetSharedMap() map[int32]*test.Shared {
+	if r != nil && r.SharedMap != nil {
+		return r.SharedMap
+	}
+	return nil
+}
+
 func (r *External) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {

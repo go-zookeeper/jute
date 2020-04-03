@@ -13,6 +13,13 @@ type GetMaxChildrenResponse struct {
 	Max int32 // max
 }
 
+func (r *GetMaxChildrenResponse) GetMax() int32 {
+	if r != nil {
+		return r.Max
+	}
+	return 0
+}
+
 func (r *GetMaxChildrenResponse) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

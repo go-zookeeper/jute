@@ -13,6 +13,13 @@ type ErrorTxn struct {
 	Err int32 // err
 }
 
+func (r *ErrorTxn) GetErr() int32 {
+	if r != nil {
+		return r.Err
+	}
+	return 0
+}
+
 func (r *ErrorTxn) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

@@ -16,19 +16,47 @@ type ReconfigRequest struct {
 	CurConfigId    int64   // curConfigId
 }
 
+func (r *ReconfigRequest) GetJoiningServers() string {
+	if r != nil && r.JoiningServers != nil {
+		return *r.JoiningServers
+	}
+	return ""
+}
+
+func (r *ReconfigRequest) GetLeavingServers() string {
+	if r != nil && r.LeavingServers != nil {
+		return *r.LeavingServers
+	}
+	return ""
+}
+
+func (r *ReconfigRequest) GetNewMembers() string {
+	if r != nil && r.NewMembers != nil {
+		return *r.NewMembers
+	}
+	return ""
+}
+
+func (r *ReconfigRequest) GetCurConfigId() int64 {
+	if r != nil {
+		return r.CurConfigId
+	}
+	return 0
+}
+
 func (r *ReconfigRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.JoiningServers, err = dec.ReadUstring()
+	r.JoiningServers, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
-	r.LeavingServers, err = dec.ReadUstring()
+	r.LeavingServers, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
-	r.NewMembers, err = dec.ReadUstring()
+	r.NewMembers, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -46,13 +74,13 @@ func (r *ReconfigRequest) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.JoiningServers); err != nil {
+	if err := enc.WriteString(r.JoiningServers); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.LeavingServers); err != nil {
+	if err := enc.WriteString(r.LeavingServers); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.NewMembers); err != nil {
+	if err := enc.WriteString(r.NewMembers); err != nil {
 		return err
 	}
 	if err := enc.WriteLong(r.CurConfigId); err != nil {

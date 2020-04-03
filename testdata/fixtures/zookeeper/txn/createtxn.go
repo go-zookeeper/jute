@@ -18,12 +18,47 @@ type CreateTxn struct {
 	ParentCVersion int32       // parentCVersion
 }
 
+func (r *CreateTxn) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *CreateTxn) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
+func (r *CreateTxn) GetAcl() []*data.ACL {
+	if r != nil && r.Acl != nil {
+		return r.Acl
+	}
+	return nil
+}
+
+func (r *CreateTxn) GetEphemeral() bool {
+	if r != nil {
+		return r.Ephemeral
+	}
+	return false
+}
+
+func (r *CreateTxn) GetParentCVersion() int32 {
+	if r != nil {
+		return r.ParentCVersion
+	}
+	return 0
+}
+
 func (r *CreateTxn) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -66,7 +101,7 @@ func (r *CreateTxn) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteBuffer(r.Data); err != nil {

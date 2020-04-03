@@ -14,6 +14,20 @@ type ACL struct {
 	Id    *Id   // id
 }
 
+func (r *ACL) GetPerms() int32 {
+	if r != nil {
+		return r.Perms
+	}
+	return 0
+}
+
+func (r *ACL) GetId() *Id {
+	if r != nil && r.Id != nil {
+		return r.Id
+	}
+	return nil
+}
+
 func (r *ACL) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

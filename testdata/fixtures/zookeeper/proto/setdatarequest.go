@@ -15,11 +15,32 @@ type SetDataRequest struct {
 	Version int32   // version
 }
 
+func (r *SetDataRequest) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *SetDataRequest) GetData() []byte {
+	if r != nil && r.Data != nil {
+		return r.Data
+	}
+	return nil
+}
+
+func (r *SetDataRequest) GetVersion() int32 {
+	if r != nil {
+		return r.Version
+	}
+	return 0
+}
+
 func (r *SetDataRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -41,7 +62,7 @@ func (r *SetDataRequest) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteBuffer(r.Data); err != nil {

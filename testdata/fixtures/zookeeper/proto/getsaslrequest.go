@@ -13,6 +13,13 @@ type GetSASLRequest struct {
 	Token []byte // token
 }
 
+func (r *GetSASLRequest) GetToken() []byte {
+	if r != nil && r.Token != nil {
+		return r.Token
+	}
+	return nil
+}
+
 func (r *GetSASLRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

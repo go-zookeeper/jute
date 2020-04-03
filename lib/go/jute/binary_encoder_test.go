@@ -47,7 +47,7 @@ func TestBinaryEncoderBase(t *testing.T) {
 	if err := enc.WriteDouble(3.14159265); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
-	if err := enc.WriteUstring(StringPtr("hello")); err != nil {
+	if err := enc.WriteString(String("hello")); err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
 	if err := enc.WriteBuffer([]byte{0x01, 0x02, 0x03, 0x04}); err != nil {
@@ -146,7 +146,7 @@ func TestBinaryEncoderMap(t *testing.T) {
 	}
 
 	for _, k := range keys(m1) {
-		if err := enc.WriteUstring(&k); err != nil {
+		if err := enc.WriteString(String(k)); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
 		if err := enc.WriteInt(m1[k]); err != nil {

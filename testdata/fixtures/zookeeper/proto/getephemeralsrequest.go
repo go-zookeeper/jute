@@ -13,11 +13,18 @@ type GetEphemeralsRequest struct {
 	PrefixPath *string // prefixPath
 }
 
+func (r *GetEphemeralsRequest) GetPrefixPath() string {
+	if r != nil && r.PrefixPath != nil {
+		return *r.PrefixPath
+	}
+	return ""
+}
+
 func (r *GetEphemeralsRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.PrefixPath, err = dec.ReadUstring()
+	r.PrefixPath, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -31,7 +38,7 @@ func (r *GetEphemeralsRequest) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.PrefixPath); err != nil {
+	if err := enc.WriteString(r.PrefixPath); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {

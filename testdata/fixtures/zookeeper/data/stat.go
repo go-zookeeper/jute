@@ -23,6 +23,83 @@ type Stat struct {
 	Pzxid          int64 // pzxid
 }
 
+func (r *Stat) GetCzxid() int64 {
+	if r != nil {
+		return r.Czxid
+	}
+	return 0
+}
+
+func (r *Stat) GetMzxid() int64 {
+	if r != nil {
+		return r.Mzxid
+	}
+	return 0
+}
+
+func (r *Stat) GetCtime() int64 {
+	if r != nil {
+		return r.Ctime
+	}
+	return 0
+}
+
+func (r *Stat) GetMtime() int64 {
+	if r != nil {
+		return r.Mtime
+	}
+	return 0
+}
+
+func (r *Stat) GetVersion() int32 {
+	if r != nil {
+		return r.Version
+	}
+	return 0
+}
+
+func (r *Stat) GetCversion() int32 {
+	if r != nil {
+		return r.Cversion
+	}
+	return 0
+}
+
+func (r *Stat) GetAversion() int32 {
+	if r != nil {
+		return r.Aversion
+	}
+	return 0
+}
+
+func (r *Stat) GetEphemeralOwner() int64 {
+	if r != nil {
+		return r.EphemeralOwner
+	}
+	return 0
+}
+
+func (r *Stat) GetDataLength() int32 {
+	if r != nil {
+		return r.DataLength
+	}
+	return 0
+}
+
+func (r *Stat) GetNumChildren() int32 {
+	if r != nil {
+		return r.NumChildren
+	}
+	return 0
+}
+
+func (r *Stat) GetPzxid() int64 {
+	if r != nil {
+		return r.Pzxid
+	}
+	return 0
+}
+
 func (r *Stat) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

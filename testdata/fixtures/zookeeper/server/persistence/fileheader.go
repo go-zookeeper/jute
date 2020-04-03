@@ -15,6 +15,27 @@ type FileHeader struct {
 	Dbid    int64 // dbid
 }
 
+func (r *FileHeader) GetMagic() int32 {
+	if r != nil {
+		return r.Magic
+	}
+	return 0
+}
+
+func (r *FileHeader) GetVersion() int32 {
+	if r != nil {
+		return r.Version
+	}
+	return 0
+}
+
+func (r *FileHeader) GetDbid() int64 {
+	if r != nil {
+		return r.Dbid
+	}
+	return 0
+}
+
 func (r *FileHeader) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

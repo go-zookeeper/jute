@@ -17,6 +17,41 @@ type TxnHeader struct {
 	Type     int32 // type
 }
 
+func (r *TxnHeader) GetClientId() int64 {
+	if r != nil {
+		return r.ClientId
+	}
+	return 0
+}
+
+func (r *TxnHeader) GetCxid() int32 {
+	if r != nil {
+		return r.Cxid
+	}
+	return 0
+}
+
+func (r *TxnHeader) GetZxid() int64 {
+	if r != nil {
+		return r.Zxid
+	}
+	return 0
+}
+
+func (r *TxnHeader) GetTime() int64 {
+	if r != nil {
+		return r.Time
+	}
+	return 0
+}
+
+func (r *TxnHeader) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
 func (r *TxnHeader) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

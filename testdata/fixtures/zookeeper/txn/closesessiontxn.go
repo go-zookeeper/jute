@@ -10,7 +10,14 @@ import (
 )
 
 type CloseSessionTxn struct {
-	Paths2Delete []*string // paths2Delete
+	Paths2Delete []string // paths2Delete
+}
+
+func (r *CloseSessionTxn) GetPaths2Delete() []string {
+	if r != nil && r.Paths2Delete != nil {
+		return r.Paths2Delete
+	}
+	return nil
 }
 
 func (r *CloseSessionTxn) Read(dec jute.Decoder) (err error) {
@@ -25,11 +32,16 @@ func (r *CloseSessionTxn) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Paths2Delete = nil
 	} else {
-		r.Paths2Delete = make([]*string, size)
+		r.Paths2Delete = make([]string, size)
 		for i := 0; i < size; i++ {
-			r.Paths2Delete[i], err = dec.ReadUstring()
+			s1, err := dec.ReadString()
 			if err != nil {
 				return err
+			}
+			if s1 == nil {
+				r.Paths2Delete[i] = ""
+			} else {
+				r.Paths2Delete[i] = *s1
 			}
 		}
 	}
@@ -50,7 +62,7 @@ func (r *CloseSessionTxn) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Paths2Delete {
-		if err := enc.WriteUstring(v); err != nil {
+		if err := enc.WriteString(&v); err != nil {
 			return err
 		}
 	}

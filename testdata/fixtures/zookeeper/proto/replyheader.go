@@ -15,6 +15,27 @@ type ReplyHeader struct {
 	Err  int32 // err
 }
 
+func (r *ReplyHeader) GetXid() int32 {
+	if r != nil {
+		return r.Xid
+	}
+	return 0
+}
+
+func (r *ReplyHeader) GetZxid() int64 {
+	if r != nil {
+		return r.Zxid
+	}
+	return 0
+}
+
+func (r *ReplyHeader) GetErr() int32 {
+	if r != nil {
+		return r.Err
+	}
+	return 0
+}
+
 func (r *ReplyHeader) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

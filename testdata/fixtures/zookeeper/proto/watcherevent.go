@@ -15,6 +15,27 @@ type WatcherEvent struct {
 	Path  *string // path
 }
 
+func (r *WatcherEvent) GetType() int32 {
+	if r != nil {
+		return r.Type
+	}
+	return 0
+}
+
+func (r *WatcherEvent) GetState() int32 {
+	if r != nil {
+		return r.State
+	}
+	return 0
+}
+
+func (r *WatcherEvent) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
 func (r *WatcherEvent) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
@@ -27,7 +48,7 @@ func (r *WatcherEvent) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -47,7 +68,7 @@ func (r *WatcherEvent) Write(enc jute.Encoder) error {
 	if err := enc.WriteInt(r.State); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {

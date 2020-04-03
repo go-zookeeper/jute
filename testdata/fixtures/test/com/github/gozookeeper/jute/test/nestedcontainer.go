@@ -16,6 +16,34 @@ type NestedContainer struct {
 	V2 []map[int32]*Basic         // v2
 }
 
+func (r *NestedContainer) GetM1() map[int32]map[string]int32 {
+	if r != nil && r.M1 != nil {
+		return r.M1
+	}
+	return nil
+}
+
+func (r *NestedContainer) GetM2() map[string][]float64 {
+	if r != nil && r.M2 != nil {
+		return r.M2
+	}
+	return nil
+}
+
+func (r *NestedContainer) GetV1() [][][]int32 {
+	if r != nil && r.V1 != nil {
+		return r.V1
+	}
+	return nil
+}
+
+func (r *NestedContainer) GetV2() []map[int32]*Basic {
+	if r != nil && r.V2 != nil {
+		return r.V2
+	}
+	return nil
+}
+
 func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {
@@ -38,21 +66,23 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 			return err
 		}
 		v0 = make(map[string]int32)
-		var k1 *string
+		var k1 string
 		var v1 int32
 		for i := 0; i < size; i++ {
-			k1, err = dec.ReadUstring()
+			s2, err := dec.ReadString()
 			if err != nil {
 				return err
 			}
-			if k1 == nil {
-				return jute.ErrNilKey
+			if s2 == nil {
+				k1 = ""
+			} else {
+				k1 = *s2
 			}
 			v1, err = dec.ReadInt()
 			if err != nil {
 				return err
 			}
-			v0[*k1] = v1
+			v0[k1] = v1
 		}
 		if err = dec.ReadMapEnd(); err != nil {
 			return err
@@ -67,15 +97,17 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 		return err
 	}
 	r.M2 = make(map[string][]float64)
-	var k1 *string
+	var k1 string
 	var v1 []float64
 	for i := 0; i < size; i++ {
-		k1, err = dec.ReadUstring()
+		s2, err := dec.ReadString()
 		if err != nil {
 			return err
 		}
-		if k1 == nil {
-			return jute.ErrNilKey
+		if s2 == nil {
+			k1 = ""
+		} else {
+			k1 = *s2
 		}
 		size, err = dec.ReadVectorStart()
 		if err != nil {
@@ -95,7 +127,7 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 		if err = dec.ReadVectorEnd(); err != nil {
 			return err
 		}
-		r.M2[*k1] = v1
+		r.M2[k1] = v1
 	}
 	if err = dec.ReadMapEnd(); err != nil {
 		return err
@@ -201,7 +233,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 			return err
 		}
 		for k, v := range v {
-			if err := enc.WriteUstring(k); err != nil {
+			if err := enc.WriteString(&k); err != nil {
 				return err
 			}
 			if err := enc.WriteInt(v); err != nil {
@@ -219,7 +251,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 		return err
 	}
 	for k, v := range r.M2 {
-		if err := enc.WriteUstring(k); err != nil {
+		if err := enc.WriteString(&k); err != nil {
 			return err
 		}
 		if err := enc.WriteVectorStart(len(v), v == nil); err != nil {

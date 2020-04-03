@@ -13,6 +13,13 @@ type CreateSessionTxn struct {
 	TimeOut int32 // timeOut
 }
 
+func (r *CreateSessionTxn) GetTimeOut() int32 {
+	if r != nil {
+		return r.TimeOut
+	}
+	return 0
+}
+
 func (r *CreateSessionTxn) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

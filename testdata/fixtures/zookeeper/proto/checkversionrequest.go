@@ -14,11 +14,25 @@ type CheckVersionRequest struct {
 	Version int32   // version
 }
 
+func (r *CheckVersionRequest) GetPath() string {
+	if r != nil && r.Path != nil {
+		return *r.Path
+	}
+	return ""
+}
+
+func (r *CheckVersionRequest) GetVersion() int32 {
+	if r != nil {
+		return r.Version
+	}
+	return 0
+}
+
 func (r *CheckVersionRequest) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	r.Path, err = dec.ReadUstring()
+	r.Path, err = dec.ReadString()
 	if err != nil {
 		return err
 	}
@@ -36,7 +50,7 @@ func (r *CheckVersionRequest) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteUstring(r.Path); err != nil {
+	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
 	if err := enc.WriteInt(r.Version); err != nil {

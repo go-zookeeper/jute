@@ -15,6 +15,20 @@ type GetACLResponse struct {
 	Stat *data.Stat  // stat
 }
 
+func (r *GetACLResponse) GetAcl() []*data.ACL {
+	if r != nil && r.Acl != nil {
+		return r.Acl
+	}
+	return nil
+}
+
+func (r *GetACLResponse) GetStat() *data.Stat {
+	if r != nil && r.Stat != nil {
+		return r.Stat
+	}
+	return nil
+}
+
 func (r *GetACLResponse) Read(dec jute.Decoder) (err error) {
 	var size int
 	if err = dec.ReadStart(); err != nil {

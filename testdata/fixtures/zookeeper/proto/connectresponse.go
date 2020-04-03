@@ -16,6 +16,34 @@ type ConnectResponse struct {
 	Passwd          []byte // passwd
 }
 
+func (r *ConnectResponse) GetProtocolVersion() int32 {
+	if r != nil {
+		return r.ProtocolVersion
+	}
+	return 0
+}
+
+func (r *ConnectResponse) GetTimeOut() int32 {
+	if r != nil {
+		return r.TimeOut
+	}
+	return 0
+}
+
+func (r *ConnectResponse) GetSessionId() int64 {
+	if r != nil {
+		return r.SessionId
+	}
+	return 0
+}
+
+func (r *ConnectResponse) GetPasswd() []byte {
+	if r != nil && r.Passwd != nil {
+		return r.Passwd
+	}
+	return nil
+}
+
 func (r *ConnectResponse) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err

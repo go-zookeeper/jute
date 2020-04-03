@@ -10,7 +10,14 @@ import (
 )
 
 type GetChildrenResponse struct {
-	Children []*string // children
+	Children []string // children
+}
+
+func (r *GetChildrenResponse) GetChildren() []string {
+	if r != nil && r.Children != nil {
+		return r.Children
+	}
+	return nil
 }
 
 func (r *GetChildrenResponse) Read(dec jute.Decoder) (err error) {
@@ -25,11 +32,16 @@ func (r *GetChildrenResponse) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Children = nil
 	} else {
-		r.Children = make([]*string, size)
+		r.Children = make([]string, size)
 		for i := 0; i < size; i++ {
-			r.Children[i], err = dec.ReadUstring()
+			s1, err := dec.ReadString()
 			if err != nil {
 				return err
+			}
+			if s1 == nil {
+				r.Children[i] = ""
+			} else {
+				r.Children[i] = *s1
 			}
 		}
 	}
@@ -50,7 +62,7 @@ func (r *GetChildrenResponse) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Children {
-		if err := enc.WriteUstring(v); err != nil {
+		if err := enc.WriteString(&v); err != nil {
 			return err
 		}
 	}

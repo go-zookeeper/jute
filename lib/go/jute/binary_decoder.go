@@ -86,18 +86,18 @@ func (d *BinaryDecoder) ReadDouble() (float64, error) {
 
 }
 
-// ReadUstring will read a utf-8 encoded string first by reading the length
+// ReadString will read a utf-8 encoded string first by reading the length
 // encoded as an int (4 bytes) and then reading that number of bytes.
-func (d *BinaryDecoder) ReadUstring() (*string, error) {
+func (d *BinaryDecoder) ReadString() (*string, error) {
 	// TODO: optimize for small reads
 	p, err := d.ReadBuffer()
 	if err != nil {
 		return nil, err
 	}
 	if p == nil {
-		return nil, nil
+		return nil, err
 	}
-	return StringPtr(string(p)), nil
+	return String(string(p)), nil
 }
 
 // ReadBuffer will read a byte slice first by reading the length encoded as an
