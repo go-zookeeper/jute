@@ -12,6 +12,7 @@ type parser struct {
 
 	tokens    [2]token
 	peekCount int
+	namespace string
 }
 
 func Parse(name, input string) (*Doc, error) {
@@ -134,6 +135,7 @@ func (p *parser) parseModule() (*Module, error) {
 		return nil, err
 	}
 
+	p.namespace = t.val
 	mod := &Module{
 		Name: t.val,
 	}
@@ -329,6 +331,10 @@ func (p *parser) parseClassRefType() (*ClassType, error) {
 		ident = t.val[i+1:]
 	} else {
 		ident = t.val
+	}
+
+	if p.namespace == namespace {
+		namespace = ""
 	}
 
 	return &ClassType{
