@@ -1,3 +1,9 @@
+module com.github.gozookeeper.jute.test2 {
+    class Shared {
+        int i;
+    }
+}
+
 module com.github.gozookeeper.jute.test {
     class Basic {
         boolean b;
@@ -25,13 +31,7 @@ module com.github.gozookeeper.jute.test {
     }
 
     class External {
-        com.github.gozookeeper.jute.test.Shared           shared;
-        map<int, com.github.gozookeeper.jute.test.Shared> sharedMap;
-    }
-}
-
-module com.github.gozookeeper.jute.test2 {
-    class Shared {
-        int i;
+        com.github.gozookeeper.jute.test.Shared            shared;
+        map<int, com.github.gozookeeper.jute.test2.Shared> sharedMap;
     }
 }

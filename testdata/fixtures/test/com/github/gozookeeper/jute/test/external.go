@@ -6,12 +6,13 @@ package test // com/github/gozookeeper/jute/test
 import (
 	"fmt"
 
+	"com/github/gozookeeper/jute/test2"
 	"github.com/go-zookeeper/jute/lib/go/jute"
 )
 
 type External struct {
-	Shared    *Shared           // shared
-	SharedMap map[int32]*Shared // sharedMap
+	Shared    *Shared                 // shared
+	SharedMap map[int32]*test2.Shared // sharedMap
 }
 
 func (r *External) GetShared() *Shared {
@@ -21,7 +22,7 @@ func (r *External) GetShared() *Shared {
 	return nil
 }
 
-func (r *External) GetSharedMap() map[int32]*Shared {
+func (r *External) GetSharedMap() map[int32]*test2.Shared {
 	if r != nil && r.SharedMap != nil {
 		return r.SharedMap
 	}
@@ -40,9 +41,9 @@ func (r *External) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.SharedMap = make(map[int32]*Shared)
+	r.SharedMap = make(map[int32]*test2.Shared)
 	var k1 int32
-	var v1 *Shared
+	var v1 *test2.Shared
 	for i := 0; i < size; i++ {
 		k1, err = dec.ReadInt()
 		if err != nil {
