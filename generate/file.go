@@ -1,9 +1,6 @@
 package generate
 
 import (
-	"fmt"
-	"path/filepath"
-
 	"github.com/go-zookeeper/jute/parser"
 )
 
@@ -20,13 +17,8 @@ func ParseFile(filename string) (*File, error) {
 		return nil, err
 	}
 
-	absPath, err := filepath.Abs(filename)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get absolute path for '%s': %v", filename, err)
-	}
-
 	return &File{
-		Path: absPath,
+		Path: filename,
 		Doc:  doc,
 	}, nil
 }
