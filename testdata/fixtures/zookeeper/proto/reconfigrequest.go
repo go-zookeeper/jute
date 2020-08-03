@@ -10,29 +10,29 @@ import (
 )
 
 type ReconfigRequest struct {
-	JoiningServers *string // joiningServers
-	LeavingServers *string // leavingServers
-	NewMembers     *string // newMembers
-	CurConfigId    int64   // curConfigId
+	JoiningServers string // joiningServers
+	LeavingServers string // leavingServers
+	NewMembers     string // newMembers
+	CurConfigId    int64  // curConfigId
 }
 
 func (r *ReconfigRequest) GetJoiningServers() string {
-	if r != nil && r.JoiningServers != nil {
-		return *r.JoiningServers
+	if r != nil {
+		return r.JoiningServers
 	}
 	return ""
 }
 
 func (r *ReconfigRequest) GetLeavingServers() string {
-	if r != nil && r.LeavingServers != nil {
-		return *r.LeavingServers
+	if r != nil {
+		return r.LeavingServers
 	}
 	return ""
 }
 
 func (r *ReconfigRequest) GetNewMembers() string {
-	if r != nil && r.NewMembers != nil {
-		return *r.NewMembers
+	if r != nil {
+		return r.NewMembers
 	}
 	return ""
 }

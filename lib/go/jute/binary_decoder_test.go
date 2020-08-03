@@ -127,8 +127,8 @@ func TestBinaryDecoderBase(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected err: %v", err)
 	}
-	if *s1 != "hello" {
-		t.Errorf("ReadString: expected 'hello' got %q", *s1)
+	if s1 != "hello" {
+		t.Errorf("ReadString: expected 'hello' got %q", s1)
 	}
 
 	buf1, err := dec.ReadBuffer()
@@ -230,7 +230,7 @@ func TestBinaryDecoderMap(t *testing.T) {
 		if err != nil {
 			t.Errorf("unexpected err: %v", err)
 		}
-		m1[*k] = v
+		m1[k] = v
 	}
 
 	if err := dec.ReadMapEnd(); err != nil {

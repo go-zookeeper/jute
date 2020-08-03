@@ -11,7 +11,7 @@ import (
 )
 
 type CreateTTLTxn struct {
-	Path           *string     // path
+	Path           string      // path
 	Data           []byte      // data
 	Acl            []*data.ACL // acl
 	ParentCVersion int32       // parentCVersion
@@ -19,8 +19,8 @@ type CreateTTLTxn struct {
 }
 
 func (r *CreateTTLTxn) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

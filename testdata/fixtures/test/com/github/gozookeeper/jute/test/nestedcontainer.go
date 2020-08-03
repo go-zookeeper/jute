@@ -69,14 +69,9 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 		var k1 string
 		var v1 int32
 		for i := 0; i < size; i++ {
-			s2, err := dec.ReadString()
+			k1, err = dec.ReadString()
 			if err != nil {
 				return err
-			}
-			if s2 == nil {
-				k1 = ""
-			} else {
-				k1 = *s2
 			}
 			v1, err = dec.ReadInt()
 			if err != nil {
@@ -100,14 +95,9 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 	var k1 string
 	var v1 []float64
 	for i := 0; i < size; i++ {
-		s2, err := dec.ReadString()
+		k1, err = dec.ReadString()
 		if err != nil {
 			return err
-		}
-		if s2 == nil {
-			k1 = ""
-		} else {
-			k1 = *s2
 		}
 		size, err = dec.ReadVectorStart()
 		if err != nil {
@@ -233,7 +223,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 			return err
 		}
 		for k, v := range v {
-			if err := enc.WriteString(&k); err != nil {
+			if err := enc.WriteString(k); err != nil {
 				return err
 			}
 			if err := enc.WriteInt(v); err != nil {
@@ -251,7 +241,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 		return err
 	}
 	for k, v := range r.M2 {
-		if err := enc.WriteString(&k); err != nil {
+		if err := enc.WriteString(k); err != nil {
 			return err
 		}
 		if err := enc.WriteVectorStart(len(v), v == nil); err != nil {

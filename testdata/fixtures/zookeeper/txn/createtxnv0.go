@@ -11,15 +11,15 @@ import (
 )
 
 type CreateTxnV0 struct {
-	Path      *string     // path
+	Path      string      // path
 	Data      []byte      // data
 	Acl       []*data.ACL // acl
 	Ephemeral bool        // ephemeral
 }
 
 func (r *CreateTxnV0) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

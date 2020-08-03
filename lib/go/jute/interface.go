@@ -23,7 +23,7 @@ type Encoder interface {
 	WriteLong(int64) error
 	WriteFloat(float32) error
 	WriteDouble(float64) error
-	WriteString(*string) error
+	WriteString(string) error
 	WriteBuffer([]byte) error
 
 	WriteVectorStart(len int, isNil bool) error
@@ -46,7 +46,7 @@ type Decoder interface {
 	ReadLong() (int64, error)
 	ReadFloat() (float32, error)
 	ReadDouble() (float64, error)
-	ReadString() (*string, error)
+	ReadString() (string, error)
 	ReadBuffer() ([]byte, error)
 
 	ReadVectorStart() (int, error)

@@ -10,13 +10,13 @@ import (
 )
 
 type GetDataRequest struct {
-	Path  *string // path
-	Watch bool    // watch
+	Path  string // path
+	Watch bool   // watch
 }
 
 func (r *GetDataRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

@@ -11,7 +11,7 @@ import (
 )
 
 type CreateTxn struct {
-	Path           *string     // path
+	Path           string      // path
 	Data           []byte      // data
 	Acl            []*data.ACL // acl
 	Ephemeral      bool        // ephemeral
@@ -19,8 +19,8 @@ type CreateTxn struct {
 }
 
 func (r *CreateTxn) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

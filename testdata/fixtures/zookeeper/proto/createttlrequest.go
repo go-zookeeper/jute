@@ -11,7 +11,7 @@ import (
 )
 
 type CreateTTLRequest struct {
-	Path  *string     // path
+	Path  string      // path
 	Data  []byte      // data
 	Acl   []*data.ACL // acl
 	Flags int32       // flags
@@ -19,8 +19,8 @@ type CreateTTLRequest struct {
 }
 
 func (r *CreateTTLRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

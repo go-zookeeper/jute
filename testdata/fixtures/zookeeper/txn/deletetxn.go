@@ -10,12 +10,12 @@ import (
 )
 
 type DeleteTxn struct {
-	Path *string // path
+	Path string // path
 }
 
 func (r *DeleteTxn) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

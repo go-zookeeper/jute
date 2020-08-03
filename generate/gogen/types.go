@@ -122,27 +122,24 @@ func (t *goType) isNillable() bool {
 	}
 }
 
-var primTypeMap = map[parser.PTypeID]struct {
-	typeID typeID
-	ptr    bool
-}{
-	parser.BooleanTypeID: {typeBool, false},
-	parser.ByteTypeID:    {typeByte, false},
-	parser.IntTypeID:     {typeInt32, false},
-	parser.LongTypeID:    {typeInt64, false},
-	parser.FloatTypeID:   {typeFloat32, false},
-	parser.DoubleTypeID:  {typeFloat64, false},
-	parser.UStringTypeID: {typeString, true},
-	parser.BufferTypeID:  {typeByteSlice, false},
+var primTypeMap = map[parser.PTypeID]typeID {
+	parser.BooleanTypeID: typeBool,
+	parser.ByteTypeID:    typeByte,
+	parser.IntTypeID:     typeInt32,
+	parser.LongTypeID:    typeInt64,
+	parser.FloatTypeID:   typeFloat32,
+	parser.DoubleTypeID:  typeFloat64,
+	parser.UStringTypeID: typeString,
+	parser.BufferTypeID:  typeByteSlice,
 }
 
 func (g *generator) convertType(juteType parser.Type) (*goType, error) {
 	switch t := juteType.(type) {
 	case *parser.PType:
-		if spec, ok := primTypeMap[t.TypeID]; ok {
+		if typeID, ok := primTypeMap[t.TypeID]; ok {
 			return &goType{
-				typeID: spec.typeID,
-				isPtr:  spec.ptr,
+				typeID: typeID,
+				isPtr:  false,
 			}, nil
 		}
 		return nil, fmt.Errorf("unknown primative type %v", t.TypeID)

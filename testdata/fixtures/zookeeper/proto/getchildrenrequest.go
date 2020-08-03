@@ -10,13 +10,13 @@ import (
 )
 
 type GetChildrenRequest struct {
-	Path  *string // path
-	Watch bool    // watch
+	Path  string // path
+	Watch bool   // watch
 }
 
 func (r *GetChildrenRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

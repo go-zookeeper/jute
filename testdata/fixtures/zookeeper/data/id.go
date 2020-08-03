@@ -10,20 +10,20 @@ import (
 )
 
 type Id struct {
-	Scheme *string // scheme
-	Id     *string // id
+	Scheme string // scheme
+	Id     string // id
 }
 
 func (r *Id) GetScheme() string {
-	if r != nil && r.Scheme != nil {
-		return *r.Scheme
+	if r != nil {
+		return r.Scheme
 	}
 	return ""
 }
 
 func (r *Id) GetId() string {
-	if r != nil && r.Id != nil {
-		return *r.Id
+	if r != nil {
+		return r.Id
 	}
 	return ""
 }

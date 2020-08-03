@@ -10,13 +10,13 @@ import (
 )
 
 type SetMaxChildrenRequest struct {
-	Path *string // path
-	Max  int32   // max
+	Path string // path
+	Max  int32  // max
 }
 
 func (r *SetMaxChildrenRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

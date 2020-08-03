@@ -58,14 +58,9 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	} else {
 		r.V = make([]string, size)
 		for i := 0; i < size; i++ {
-			s1, err := dec.ReadString()
+			r.V[i], err = dec.ReadString()
 			if err != nil {
 				return err
-			}
-			if s1 == nil {
-				r.V[i] = ""
-			} else {
-				r.V[i] = *s1
 			}
 		}
 	}
@@ -80,23 +75,13 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	var k1 string
 	var v1 string
 	for i := 0; i < size; i++ {
-		s2, err := dec.ReadString()
+		k1, err = dec.ReadString()
 		if err != nil {
 			return err
 		}
-		if s2 == nil {
-			k1 = ""
-		} else {
-			k1 = *s2
-		}
-		s2, err := dec.ReadString()
+		v1, err = dec.ReadString()
 		if err != nil {
 			return err
-		}
-		if s2 == nil {
-			v1 = ""
-		} else {
-			v1 = *s2
 		}
 		r.M1[k1] = v1
 	}
@@ -141,7 +126,7 @@ func (r *Container) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.V {
-		if err := enc.WriteString(&v); err != nil {
+		if err := enc.WriteString(v); err != nil {
 			return err
 		}
 	}
@@ -152,10 +137,10 @@ func (r *Container) Write(enc jute.Encoder) error {
 		return err
 	}
 	for k, v := range r.M1 {
-		if err := enc.WriteString(&k); err != nil {
+		if err := enc.WriteString(k); err != nil {
 			return err
 		}
-		if err := enc.WriteString(&v); err != nil {
+		if err := enc.WriteString(v); err != nil {
 			return err
 		}
 	}

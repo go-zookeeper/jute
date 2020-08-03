@@ -10,9 +10,9 @@ import (
 )
 
 type WatcherEvent struct {
-	Type  int32   // type
-	State int32   // state
-	Path  *string // path
+	Type  int32  // type
+	State int32  // state
+	Path  string // path
 }
 
 func (r *WatcherEvent) GetType() int32 {
@@ -30,8 +30,8 @@ func (r *WatcherEvent) GetState() int32 {
 }
 
 func (r *WatcherEvent) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }
