@@ -10,9 +10,9 @@ import (
 )
 
 type AuthPacket struct {
-	Type   int32   // type
-	Scheme *string // scheme
-	Auth   []byte  // auth
+	Type   int32  // type
+	Scheme string // scheme
+	Auth   []byte // auth
 }
 
 func (r *AuthPacket) GetType() int32 {
@@ -23,8 +23,8 @@ func (r *AuthPacket) GetType() int32 {
 }
 
 func (r *AuthPacket) GetScheme() string {
-	if r != nil && r.Scheme != nil {
-		return *r.Scheme
+	if r != nil {
+		return r.Scheme
 	}
 	return ""
 }

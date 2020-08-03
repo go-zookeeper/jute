@@ -10,13 +10,13 @@ import (
 )
 
 type AddWatchRequest struct {
-	Path *string // path
-	Mode int32   // mode
+	Path string // path
+	Mode int32  // mode
 }
 
 func (r *AddWatchRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

@@ -34,14 +34,9 @@ func (r *GetEphemeralsResponse) Read(dec jute.Decoder) (err error) {
 	} else {
 		r.Ephemerals = make([]string, size)
 		for i := 0; i < size; i++ {
-			s1, err := dec.ReadString()
+			r.Ephemerals[i], err = dec.ReadString()
 			if err != nil {
 				return err
-			}
-			if s1 == nil {
-				r.Ephemerals[i] = ""
-			} else {
-				r.Ephemerals[i] = *s1
 			}
 		}
 	}
@@ -62,7 +57,7 @@ func (r *GetEphemeralsResponse) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Ephemerals {
-		if err := enc.WriteString(&v); err != nil {
+		if err := enc.WriteString(v); err != nil {
 			return err
 		}
 	}

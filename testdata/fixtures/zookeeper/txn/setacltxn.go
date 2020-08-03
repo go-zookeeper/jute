@@ -11,14 +11,14 @@ import (
 )
 
 type SetACLTxn struct {
-	Path    *string     // path
+	Path    string      // path
 	Acl     []*data.ACL // acl
 	Version int32       // version
 }
 
 func (r *SetACLTxn) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

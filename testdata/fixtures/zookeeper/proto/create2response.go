@@ -11,13 +11,13 @@ import (
 )
 
 type Create2Response struct {
-	Path *string    // path
+	Path string     // path
 	Stat *data.Stat // stat
 }
 
 func (r *Create2Response) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

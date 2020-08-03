@@ -16,7 +16,7 @@ type Basic struct {
 	L   int64   // l
 	F   float32 // f
 	D   float64 // d
-	S   *string // s
+	S   string  // s
 	Buf []byte  // buf
 }
 
@@ -63,8 +63,8 @@ func (r *Basic) GetD() float64 {
 }
 
 func (r *Basic) GetS() string {
-	if r != nil && r.S != nil {
-		return *r.S
+	if r != nil {
+		return r.S
 	}
 	return ""
 }

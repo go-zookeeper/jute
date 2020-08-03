@@ -323,11 +323,7 @@ func (g *generator) serializeMethod(typ *goType, fieldName string) (string, erro
 	w := &strings.Builder{}
 	switch {
 	case typ.isPrimative():
-		var ref string
-		if !typ.isPtr && typ.typeID == typeString {
-			ref = "&"
-		}
-		fmt.Fprintf(w, "if err := enc.Write%s(%s%s); err != nil {\n", typ.methodSuffix(), ref, fieldName)
+		fmt.Fprintf(w, "if err := enc.Write%s(%s); err != nil {\n", typ.methodSuffix(), fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	case typ.typeID == typeSlice:
@@ -384,23 +380,10 @@ func (g *generator) deserializeMethod(typ *goType, fieldName string, idx int) (s
 	w := &strings.Builder{}
 	switch {
 	case typ.isPrimative():
-		// for strings we may need to dereference a pointer
-		if !typ.isPtr && typ.typeID == typeString {
-			fmt.Fprintf(w, "s%d, err := dec.ReadString()\n", idx)
-			fmt.Fprintf(w, "if err != nil {\n")
-			fmt.Fprintf(w, "\treturn err\n")
-			fmt.Fprintf(w, "}\n")
-			fmt.Fprintf(w, "if s%d == nil {\n", idx)
-			fmt.Fprintf(w, "\t%s = \"\"\n", fieldName)
-			fmt.Fprintf(w, "} else {\n")
-			fmt.Fprintf(w, "\t%s = *s%d\n", fieldName, idx)
-			fmt.Fprintf(w, "}\n")
-		} else {
-			fmt.Fprintf(w, "%s, err = dec.Read%s()\n", fieldName, typ.methodSuffix())
-			fmt.Fprintf(w, "if err != nil {\n")
-			fmt.Fprintf(w, "\treturn err\n")
-			fmt.Fprintf(w, "}\n")
-		}
+		fmt.Fprintf(w, "%s, err = dec.Read%s()\n", fieldName, typ.methodSuffix())
+		fmt.Fprintf(w, "if err != nil {\n")
+		fmt.Fprintf(w, "\treturn err\n")
+		fmt.Fprintf(w, "}\n")
 	case typ.typeID == typeSlice:
 		itemMethod, err := g.deserializeMethod(typ.inner1, fmt.Sprintf("%s[i]", fieldName), idx+1)
 		if err != nil {

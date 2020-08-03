@@ -10,12 +10,12 @@ import (
 )
 
 type GetACLRequest struct {
-	Path *string // path
+	Path string // path
 }
 
 func (r *GetACLRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

@@ -10,13 +10,13 @@ import (
 )
 
 type CheckVersionRequest struct {
-	Path    *string // path
-	Version int32   // version
+	Path    string // path
+	Version int32  // version
 }
 
 func (r *CheckVersionRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

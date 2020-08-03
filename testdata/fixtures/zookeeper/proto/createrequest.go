@@ -11,15 +11,15 @@ import (
 )
 
 type CreateRequest struct {
-	Path  *string     // path
+	Path  string      // path
 	Data  []byte      // data
 	Acl   []*data.ACL // acl
 	Flags int32       // flags
 }
 
 func (r *CreateRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }

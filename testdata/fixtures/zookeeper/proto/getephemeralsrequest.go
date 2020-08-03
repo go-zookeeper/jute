@@ -10,12 +10,12 @@ import (
 )
 
 type GetEphemeralsRequest struct {
-	PrefixPath *string // prefixPath
+	PrefixPath string // prefixPath
 }
 
 func (r *GetEphemeralsRequest) GetPrefixPath() string {
-	if r != nil && r.PrefixPath != nil {
-		return *r.PrefixPath
+	if r != nil {
+		return r.PrefixPath
 	}
 	return ""
 }

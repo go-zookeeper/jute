@@ -62,14 +62,9 @@ func (r *SetWatches) Read(dec jute.Decoder) (err error) {
 	} else {
 		r.DataWatches = make([]string, size)
 		for i := 0; i < size; i++ {
-			s2, err := dec.ReadString()
+			r.DataWatches[i], err = dec.ReadString()
 			if err != nil {
 				return err
-			}
-			if s2 == nil {
-				r.DataWatches[i] = ""
-			} else {
-				r.DataWatches[i] = *s2
 			}
 		}
 	}
@@ -85,14 +80,9 @@ func (r *SetWatches) Read(dec jute.Decoder) (err error) {
 	} else {
 		r.ExistWatches = make([]string, size)
 		for i := 0; i < size; i++ {
-			s3, err := dec.ReadString()
+			r.ExistWatches[i], err = dec.ReadString()
 			if err != nil {
 				return err
-			}
-			if s3 == nil {
-				r.ExistWatches[i] = ""
-			} else {
-				r.ExistWatches[i] = *s3
 			}
 		}
 	}
@@ -108,14 +98,9 @@ func (r *SetWatches) Read(dec jute.Decoder) (err error) {
 	} else {
 		r.ChildWatches = make([]string, size)
 		for i := 0; i < size; i++ {
-			s4, err := dec.ReadString()
+			r.ChildWatches[i], err = dec.ReadString()
 			if err != nil {
 				return err
-			}
-			if s4 == nil {
-				r.ChildWatches[i] = ""
-			} else {
-				r.ChildWatches[i] = *s4
 			}
 		}
 	}
@@ -139,7 +124,7 @@ func (r *SetWatches) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.DataWatches {
-		if err := enc.WriteString(&v); err != nil {
+		if err := enc.WriteString(v); err != nil {
 			return err
 		}
 	}
@@ -150,7 +135,7 @@ func (r *SetWatches) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.ExistWatches {
-		if err := enc.WriteString(&v); err != nil {
+		if err := enc.WriteString(v); err != nil {
 			return err
 		}
 	}
@@ -161,7 +146,7 @@ func (r *SetWatches) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.ChildWatches {
-		if err := enc.WriteString(&v); err != nil {
+		if err := enc.WriteString(v); err != nil {
 			return err
 		}
 	}

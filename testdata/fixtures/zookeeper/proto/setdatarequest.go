@@ -10,14 +10,14 @@ import (
 )
 
 type SetDataRequest struct {
-	Path    *string // path
-	Data    []byte  // data
-	Version int32   // version
+	Path    string // path
+	Data    []byte // data
+	Version int32  // version
 }
 
 func (r *SetDataRequest) GetPath() string {
-	if r != nil && r.Path != nil {
-		return *r.Path
+	if r != nil {
+		return r.Path
 	}
 	return ""
 }
