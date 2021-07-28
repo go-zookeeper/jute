@@ -78,6 +78,8 @@ func (t *goType) zeroValue() string {
 		return "0"
 	case typeString:
 		return `""`
+	case typeClass:
+		return t.classType + "{}"
 	}
 	return "nil"
 }
@@ -115,14 +117,14 @@ func (t *goType) isPrimative() bool {
 
 func (t *goType) isNillable() bool {
 	switch t.typeID {
-	case typeBool, typeByte, typeInt32, typeInt64, typeFloat32, typeFloat64, typeString:
+	case typeBool, typeByte, typeInt32, typeInt64, typeFloat32, typeFloat64, typeString, typeClass:
 		return t.isPtr
 	default:
 		return true
 	}
 }
 
-var primTypeMap = map[parser.PTypeID]typeID {
+var primTypeMap = map[parser.PTypeID]typeID{
 	parser.BooleanTypeID: typeBool,
 	parser.ByteTypeID:    typeByte,
 	parser.IntTypeID:     typeInt32,
@@ -186,7 +188,6 @@ func (g *generator) convertType(juteType parser.Type) (*goType, error) {
 		}
 		return &goType{
 			typeID:    typeClass,
-			isPtr:     true,
 			classType: prefix + t.ClassName,
 		}, nil
 	}
