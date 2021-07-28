@@ -11,9 +11,9 @@ import (
 )
 
 type SetACLRequest struct {
-	Path    string      // path
-	Acl     []*data.ACL // acl
-	Version int32       // version
+	Path    string     // path
+	Acl     []data.ACL // acl
+	Version int32      // version
 }
 
 func (r *SetACLRequest) GetPath() string {
@@ -23,7 +23,7 @@ func (r *SetACLRequest) GetPath() string {
 	return ""
 }
 
-func (r *SetACLRequest) GetAcl() []*data.ACL {
+func (r *SetACLRequest) GetAcl() []data.ACL {
 	if r != nil && r.Acl != nil {
 		return r.Acl
 	}
@@ -53,9 +53,9 @@ func (r *SetACLRequest) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Acl = nil
 	} else {
-		r.Acl = make([]*data.ACL, size)
+		r.Acl = make([]data.ACL, size)
 		for i := 0; i < size; i++ {
-			if err = dec.ReadRecord(r.Acl[i]); err != nil {
+			if err = dec.ReadRecord(&r.Acl[i]); err != nil {
 				return err
 			}
 		}
@@ -84,7 +84,7 @@ func (r *SetACLRequest) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Acl {
-		if err := enc.WriteRecord(v); err != nil {
+		if err := enc.WriteRecord(&v); err != nil {
 			return err
 		}
 	}

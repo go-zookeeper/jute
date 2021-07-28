@@ -11,8 +11,8 @@ import (
 )
 
 type GetDataResponse struct {
-	Data []byte     // data
-	Stat *data.Stat // stat
+	Data []byte    // data
+	Stat data.Stat // stat
 }
 
 func (r *GetDataResponse) GetData() []byte {
@@ -22,11 +22,11 @@ func (r *GetDataResponse) GetData() []byte {
 	return nil
 }
 
-func (r *GetDataResponse) GetStat() *data.Stat {
-	if r != nil && r.Stat != nil {
+func (r *GetDataResponse) GetStat() data.Stat {
+	if r != nil {
 		return r.Stat
 	}
-	return nil
+	return data.Stat{}
 }
 
 func (r *GetDataResponse) Read(dec jute.Decoder) (err error) {
@@ -37,7 +37,7 @@ func (r *GetDataResponse) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = dec.ReadRecord(r.Stat); err != nil {
+	if err = dec.ReadRecord(&r.Stat); err != nil {
 		return err
 	}
 	if err = dec.ReadEnd(); err != nil {
@@ -53,7 +53,7 @@ func (r *GetDataResponse) Write(enc jute.Encoder) error {
 	if err := enc.WriteBuffer(r.Data); err != nil {
 		return err
 	}
-	if err := enc.WriteRecord(r.Stat); err != nil {
+	if err := enc.WriteRecord(&r.Stat); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {
