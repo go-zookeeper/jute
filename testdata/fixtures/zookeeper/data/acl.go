@@ -11,7 +11,7 @@ import (
 
 type ACL struct {
 	Perms int32 // perms
-	Id    *Id   // id
+	Id    Id    // id
 }
 
 func (r *ACL) GetPerms() int32 {
@@ -21,11 +21,11 @@ func (r *ACL) GetPerms() int32 {
 	return 0
 }
 
-func (r *ACL) GetId() *Id {
-	if r != nil && r.Id != nil {
+func (r *ACL) GetId() Id {
+	if r != nil {
 		return r.Id
 	}
-	return nil
+	return Id{}
 }
 
 func (r *ACL) Read(dec jute.Decoder) (err error) {
@@ -36,7 +36,7 @@ func (r *ACL) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = dec.ReadRecord(r.Id); err != nil {
+	if err = dec.ReadRecord(&r.Id); err != nil {
 		return err
 	}
 	if err = dec.ReadEnd(); err != nil {
@@ -52,7 +52,7 @@ func (r *ACL) Write(enc jute.Encoder) error {
 	if err := enc.WriteInt(r.Perms); err != nil {
 		return err
 	}
-	if err := enc.WriteRecord(r.Id); err != nil {
+	if err := enc.WriteRecord(&r.Id); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {

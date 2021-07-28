@@ -11,11 +11,11 @@ import (
 )
 
 type CreateTxn struct {
-	Path           string      // path
-	Data           []byte      // data
-	Acl            []*data.ACL // acl
-	Ephemeral      bool        // ephemeral
-	ParentCVersion int32       // parentCVersion
+	Path           string     // path
+	Data           []byte     // data
+	Acl            []data.ACL // acl
+	Ephemeral      bool       // ephemeral
+	ParentCVersion int32      // parentCVersion
 }
 
 func (r *CreateTxn) GetPath() string {
@@ -32,7 +32,7 @@ func (r *CreateTxn) GetData() []byte {
 	return nil
 }
 
-func (r *CreateTxn) GetAcl() []*data.ACL {
+func (r *CreateTxn) GetAcl() []data.ACL {
 	if r != nil && r.Acl != nil {
 		return r.Acl
 	}
@@ -73,9 +73,9 @@ func (r *CreateTxn) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Acl = nil
 	} else {
-		r.Acl = make([]*data.ACL, size)
+		r.Acl = make([]data.ACL, size)
 		for i := 0; i < size; i++ {
-			if err = dec.ReadRecord(r.Acl[i]); err != nil {
+			if err = dec.ReadRecord(&r.Acl[i]); err != nil {
 				return err
 			}
 		}
@@ -111,7 +111,7 @@ func (r *CreateTxn) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Acl {
-		if err := enc.WriteRecord(v); err != nil {
+		if err := enc.WriteRecord(&v); err != nil {
 			return err
 		}
 	}

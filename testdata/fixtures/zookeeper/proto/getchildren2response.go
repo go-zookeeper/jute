@@ -11,8 +11,8 @@ import (
 )
 
 type GetChildren2Response struct {
-	Children []string   // children
-	Stat     *data.Stat // stat
+	Children []string  // children
+	Stat     data.Stat // stat
 }
 
 func (r *GetChildren2Response) GetChildren() []string {
@@ -22,11 +22,11 @@ func (r *GetChildren2Response) GetChildren() []string {
 	return nil
 }
 
-func (r *GetChildren2Response) GetStat() *data.Stat {
-	if r != nil && r.Stat != nil {
+func (r *GetChildren2Response) GetStat() data.Stat {
+	if r != nil {
 		return r.Stat
 	}
-	return nil
+	return data.Stat{}
 }
 
 func (r *GetChildren2Response) Read(dec jute.Decoder) (err error) {
@@ -52,7 +52,7 @@ func (r *GetChildren2Response) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadVectorEnd(); err != nil {
 		return err
 	}
-	if err = dec.ReadRecord(r.Stat); err != nil {
+	if err = dec.ReadRecord(&r.Stat); err != nil {
 		return err
 	}
 	if err = dec.ReadEnd(); err != nil {
@@ -76,7 +76,7 @@ func (r *GetChildren2Response) Write(enc jute.Encoder) error {
 	if err := enc.WriteVectorEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteRecord(r.Stat); err != nil {
+	if err := enc.WriteRecord(&r.Stat); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {

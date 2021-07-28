@@ -11,10 +11,10 @@ import (
 )
 
 type QuorumPacket struct {
-	Type     int32      // type
-	Zxid     int64      // zxid
-	Data     []byte     // data
-	Authinfo []*data.Id // authinfo
+	Type     int32     // type
+	Zxid     int64     // zxid
+	Data     []byte    // data
+	Authinfo []data.Id // authinfo
 }
 
 func (r *QuorumPacket) GetType() int32 {
@@ -38,7 +38,7 @@ func (r *QuorumPacket) GetData() []byte {
 	return nil
 }
 
-func (r *QuorumPacket) GetAuthinfo() []*data.Id {
+func (r *QuorumPacket) GetAuthinfo() []data.Id {
 	if r != nil && r.Authinfo != nil {
 		return r.Authinfo
 	}
@@ -69,9 +69,9 @@ func (r *QuorumPacket) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Authinfo = nil
 	} else {
-		r.Authinfo = make([]*data.Id, size)
+		r.Authinfo = make([]data.Id, size)
 		for i := 0; i < size; i++ {
-			if err = dec.ReadRecord(r.Authinfo[i]); err != nil {
+			if err = dec.ReadRecord(&r.Authinfo[i]); err != nil {
 				return err
 			}
 		}
@@ -102,7 +102,7 @@ func (r *QuorumPacket) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Authinfo {
-		if err := enc.WriteRecord(v); err != nil {
+		if err := enc.WriteRecord(&v); err != nil {
 			return err
 		}
 	}

@@ -11,8 +11,8 @@ import (
 )
 
 type Create2Response struct {
-	Path string     // path
-	Stat *data.Stat // stat
+	Path string    // path
+	Stat data.Stat // stat
 }
 
 func (r *Create2Response) GetPath() string {
@@ -22,11 +22,11 @@ func (r *Create2Response) GetPath() string {
 	return ""
 }
 
-func (r *Create2Response) GetStat() *data.Stat {
-	if r != nil && r.Stat != nil {
+func (r *Create2Response) GetStat() data.Stat {
+	if r != nil {
 		return r.Stat
 	}
-	return nil
+	return data.Stat{}
 }
 
 func (r *Create2Response) Read(dec jute.Decoder) (err error) {
@@ -37,7 +37,7 @@ func (r *Create2Response) Read(dec jute.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
-	if err = dec.ReadRecord(r.Stat); err != nil {
+	if err = dec.ReadRecord(&r.Stat); err != nil {
 		return err
 	}
 	if err = dec.ReadEnd(); err != nil {
@@ -53,7 +53,7 @@ func (r *Create2Response) Write(enc jute.Encoder) error {
 	if err := enc.WriteString(r.Path); err != nil {
 		return err
 	}
-	if err := enc.WriteRecord(r.Stat); err != nil {
+	if err := enc.WriteRecord(&r.Stat); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {

@@ -11,10 +11,10 @@ import (
 )
 
 type CreateRequest struct {
-	Path  string      // path
-	Data  []byte      // data
-	Acl   []*data.ACL // acl
-	Flags int32       // flags
+	Path  string     // path
+	Data  []byte     // data
+	Acl   []data.ACL // acl
+	Flags int32      // flags
 }
 
 func (r *CreateRequest) GetPath() string {
@@ -31,7 +31,7 @@ func (r *CreateRequest) GetData() []byte {
 	return nil
 }
 
-func (r *CreateRequest) GetAcl() []*data.ACL {
+func (r *CreateRequest) GetAcl() []data.ACL {
 	if r != nil && r.Acl != nil {
 		return r.Acl
 	}
@@ -65,9 +65,9 @@ func (r *CreateRequest) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Acl = nil
 	} else {
-		r.Acl = make([]*data.ACL, size)
+		r.Acl = make([]data.ACL, size)
 		for i := 0; i < size; i++ {
-			if err = dec.ReadRecord(r.Acl[i]); err != nil {
+			if err = dec.ReadRecord(&r.Acl[i]); err != nil {
 				return err
 			}
 		}
@@ -99,7 +99,7 @@ func (r *CreateRequest) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Acl {
-		if err := enc.WriteRecord(v); err != nil {
+		if err := enc.WriteRecord(&v); err != nil {
 			return err
 		}
 	}

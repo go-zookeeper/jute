@@ -10,10 +10,10 @@ import (
 )
 
 type MultiTxn struct {
-	Txns []*Txn // txns
+	Txns []Txn // txns
 }
 
-func (r *MultiTxn) GetTxns() []*Txn {
+func (r *MultiTxn) GetTxns() []Txn {
 	if r != nil && r.Txns != nil {
 		return r.Txns
 	}
@@ -32,9 +32,9 @@ func (r *MultiTxn) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.Txns = nil
 	} else {
-		r.Txns = make([]*Txn, size)
+		r.Txns = make([]Txn, size)
 		for i := 0; i < size; i++ {
-			if err = dec.ReadRecord(r.Txns[i]); err != nil {
+			if err = dec.ReadRecord(&r.Txns[i]); err != nil {
 				return err
 			}
 		}
@@ -56,7 +56,7 @@ func (r *MultiTxn) Write(enc jute.Encoder) error {
 		return err
 	}
 	for _, v := range r.Txns {
-		if err := enc.WriteRecord(v); err != nil {
+		if err := enc.WriteRecord(&v); err != nil {
 			return err
 		}
 	}
