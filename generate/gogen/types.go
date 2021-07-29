@@ -25,7 +25,6 @@ const (
 
 type goType struct {
 	typeID    typeID
-	isPtr     bool
 	classType string
 
 	inner1 *goType
@@ -34,10 +33,6 @@ type goType struct {
 
 func (t *goType) String() string {
 	sb := strings.Builder{}
-
-	if t.isPtr {
-		sb.WriteString("*")
-	}
 
 	switch t.typeID {
 	case typeBool:
@@ -118,7 +113,7 @@ func (t *goType) isPrimative() bool {
 func (t *goType) isNillable() bool {
 	switch t.typeID {
 	case typeBool, typeByte, typeInt32, typeInt64, typeFloat32, typeFloat64, typeString, typeClass:
-		return t.isPtr
+		return false
 	default:
 		return true
 	}
@@ -141,7 +136,6 @@ func (g *generator) convertType(juteType parser.Type) (*goType, error) {
 		if typeID, ok := primTypeMap[t.TypeID]; ok {
 			return &goType{
 				typeID: typeID,
-				isPtr:  false,
 			}, nil
 		}
 		return nil, fmt.Errorf("unknown primative type %v", t.TypeID)
@@ -150,10 +144,6 @@ func (g *generator) convertType(juteType parser.Type) (*goType, error) {
 		innerType, err := g.convertType(t.Type)
 		if err != nil {
 			return nil, err
-		}
-		// don't point inner type
-		if innerType.typeID != typeClass {
-			innerType.isPtr = false
 		}
 		return &goType{
 			typeID: typeSlice,
@@ -165,15 +155,10 @@ func (g *generator) convertType(juteType parser.Type) (*goType, error) {
 		if err != nil {
 			return nil, err
 		}
-		keyType.isPtr = false // never pointer a key type
 
 		valType, err := g.convertType(t.ValType)
 		if err != nil {
 			return nil, err
-		}
-		// don't point value types
-		if valType.typeID != typeClass {
-			valType.isPtr = false
 		}
 
 		return &goType{

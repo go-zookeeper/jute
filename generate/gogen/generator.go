@@ -243,11 +243,6 @@ func (g *generator) writeClassStruct(fw *fileWriter, cls *class) {
 func (g *generator) writeGetters(fw *fileWriter, cls *class) {
 	for _, fld := range cls.fields {
 		returnType := fld.goType.String()
-		var deref string
-		if fld.goType.isPtr && fld.goType.typeID != typeClass {
-			returnType = strings.TrimLeft(returnType, "*")
-			deref = "*"
-		}
 		fw.printf("func (r *%s) Get%s() %s {\n", cls.goName, fld.goName, returnType)
 
 		fw.printf("\tif r != nil ")
@@ -256,7 +251,7 @@ func (g *generator) writeGetters(fw *fileWriter, cls *class) {
 		}
 		fw.printf("{\n")
 
-		fw.printf("\t\treturn %sr.%s", deref, fld.goName)
+		fw.printf("\t\treturn r.%s", fld.goName)
 		fw.printf("\t}\n")
 		fw.printf("return %s", fld.goType.zeroValue())
 		fw.printf("}\n\n")
@@ -363,11 +358,7 @@ func (g *generator) serializeMethod(typ *goType, fieldName string) (string, erro
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	case typ.typeID == typeClass:
-		var ref string
-		if !typ.isPtr {
-			ref = "&"
-		}
-		fmt.Fprintf(w, "if err := enc.WriteRecord(%s%s); err != nil {\n", ref, fieldName)
+		fmt.Fprintf(w, "if err := enc.WriteRecord(&%s); err != nil {\n", fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	default:
@@ -432,11 +423,7 @@ func (g *generator) deserializeMethod(typ *goType, fieldName string, idx int) (s
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	case typ.typeID == typeClass:
-		var ref string
-		if !typ.isPtr {
-			ref = "&"
-		}
-		fmt.Fprintf(w, "if err = dec.ReadRecord(%s%s); err != nil {\n", ref, fieldName)
+		fmt.Fprintf(w, "if err = dec.ReadRecord(&%s); err != nil {\n", fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
 	default:
