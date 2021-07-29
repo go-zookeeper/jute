@@ -317,7 +317,7 @@ func (g *generator) writeStringMethod(fw *fileWriter, cls *class) {
 func (g *generator) serializeMethod(typ *goType, fieldName string) (string, error) {
 	w := &strings.Builder{}
 	switch {
-	case typ.isPrimative():
+	case typ.isPrimitive():
 		fmt.Fprintf(w, "if err := enc.Write%s(%s); err != nil {\n", typ.methodSuffix(), fieldName)
 		fmt.Fprintf(w, "\treturn err\n")
 		fmt.Fprintf(w, "}\n")
@@ -370,7 +370,7 @@ func (g *generator) serializeMethod(typ *goType, fieldName string) (string, erro
 func (g *generator) deserializeMethod(typ *goType, fieldName string, idx int) (string, error) {
 	w := &strings.Builder{}
 	switch {
-	case typ.isPrimative():
+	case typ.isPrimitive():
 		fmt.Fprintf(w, "%s, err = dec.Read%s()\n", fieldName, typ.methodSuffix())
 		fmt.Fprintf(w, "if err != nil {\n")
 		fmt.Fprintf(w, "\treturn err\n")

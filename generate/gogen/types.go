@@ -101,9 +101,9 @@ func (t *goType) methodSuffix() string {
 	panic("unknown type")
 }
 
-func (t *goType) isPrimative() bool {
+func (t *goType) isPrimitive() bool {
 	switch t.typeID {
-	case typeBool, typeByte, typeInt32, typeInt64, typeFloat32, typeFloat64, typeString, typeByteSlice:
+	case typeBool, typeByte, typeByteSlice, typeFloat32, typeFloat64, typeInt32, typeInt64, typeString:
 		return true
 	default:
 		return false
@@ -112,7 +112,7 @@ func (t *goType) isPrimative() bool {
 
 func (t *goType) isNillable() bool {
 	switch t.typeID {
-	case typeBool, typeByte, typeInt32, typeInt64, typeFloat32, typeFloat64, typeString, typeClass:
+	case typeBool, typeByte, typeClass, typeFloat32, typeFloat64, typeInt32, typeInt64, typeString:
 		return false
 	default:
 		return true
