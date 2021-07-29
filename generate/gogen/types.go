@@ -44,24 +44,24 @@ func (t *goType) String() string {
 		sb.WriteString("bool")
 	case typeByte:
 		sb.WriteString("byte")
-	case typeInt32:
-		sb.WriteString("int32")
-	case typeInt64:
-		sb.WriteString("int64")
+	case typeByteSlice:
+		sb.WriteString("[]byte")
+	case typeClass:
+		sb.WriteString(t.classType)
 	case typeFloat32:
 		sb.WriteString("float32")
 	case typeFloat64:
 		sb.WriteString("float64")
-	case typeString:
-		sb.WriteString("string")
-	case typeByteSlice:
-		sb.WriteString("[]byte")
-	case typeSlice:
-		sb.WriteString("[]" + t.inner1.String())
+	case typeInt32:
+		sb.WriteString("int32")
+	case typeInt64:
+		sb.WriteString("int64")
 	case typeMap:
 		sb.WriteString("map[" + t.inner1.String() + "]" + t.inner2.String())
-	case typeClass:
-		sb.WriteString(t.classType)
+	case typeSlice:
+		sb.WriteString("[]" + t.inner1.String())
+	case typeString:
+		sb.WriteString("string")
 	default:
 		panic("unknown type")
 	}
@@ -76,10 +76,10 @@ func (t *goType) zeroValue() string {
 		return "false"
 	case typeByte, typeInt32, typeInt64, typeFloat32, typeFloat64:
 		return "0"
-	case typeString:
-		return `""`
 	case typeClass:
 		return t.classType + "{}"
+	case typeString:
+		return `""`
 	}
 	return "nil"
 }
@@ -202,8 +202,6 @@ func extNamespace(typ parser.Type) string {
 		return t.Namespace
 	case *parser.VectorType:
 		return extNamespace(t.Type)
-	// TODO(bbennett): Since we always use pointers for class references we
-	// don't really support external classes used as keys. Do we need this?
 	case *parser.MapType:
 		return extNamespace(t.ValType)
 	}
