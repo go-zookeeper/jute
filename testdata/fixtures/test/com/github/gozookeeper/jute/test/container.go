@@ -13,7 +13,7 @@ type Container struct {
 	V  []string          // v
 	M1 map[string]string // m1
 	M2 map[int32]int32   // m2
-	B  *Basic            // b
+	B  Basic             // b
 }
 
 func (r *Container) GetV() []string {
@@ -37,11 +37,11 @@ func (r *Container) GetM2() map[int32]int32 {
 	return nil
 }
 
-func (r *Container) GetB() *Basic {
-	if r != nil && r.B != nil {
+func (r *Container) GetB() Basic {
+	if r != nil {
 		return r.B
 	}
-	return nil
+	return Basic{}
 }
 
 func (r *Container) Read(dec jute.Decoder) (err error) {
@@ -109,7 +109,7 @@ func (r *Container) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadMapEnd(); err != nil {
 		return err
 	}
-	if err = dec.ReadRecord(r.B); err != nil {
+	if err = dec.ReadRecord(&r.B); err != nil {
 		return err
 	}
 	if err = dec.ReadEnd(); err != nil {
@@ -161,7 +161,7 @@ func (r *Container) Write(enc jute.Encoder) error {
 	if err := enc.WriteMapEnd(); err != nil {
 		return err
 	}
-	if err := enc.WriteRecord(r.B); err != nil {
+	if err := enc.WriteRecord(&r.B); err != nil {
 		return err
 	}
 	if err := enc.WriteEnd(); err != nil {
