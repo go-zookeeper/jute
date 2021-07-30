@@ -11,18 +11,18 @@ import (
 )
 
 type External struct {
-	Shared    *Shared                 // shared
-	SharedMap map[int32]*test2.Shared // sharedMap
+	Shared    Shared                 // shared
+	SharedMap map[int32]test2.Shared // sharedMap
 }
 
-func (r *External) GetShared() *Shared {
-	if r != nil && r.Shared != nil {
+func (r *External) GetShared() Shared {
+	if r != nil {
 		return r.Shared
 	}
-	return nil
+	return Shared{}
 }
 
-func (r *External) GetSharedMap() map[int32]*test2.Shared {
+func (r *External) GetSharedMap() map[int32]test2.Shared {
 	if r != nil && r.SharedMap != nil {
 		return r.SharedMap
 	}
@@ -34,22 +34,22 @@ func (r *External) Read(dec jute.Decoder) (err error) {
 	if err = dec.ReadStart(); err != nil {
 		return err
 	}
-	if err = dec.ReadRecord(r.Shared); err != nil {
+	if err = dec.ReadRecord(&r.Shared); err != nil {
 		return err
 	}
 	size, err = dec.ReadMapStart()
 	if err != nil {
 		return err
 	}
-	r.SharedMap = make(map[int32]*test2.Shared)
+	r.SharedMap = make(map[int32]test2.Shared)
 	var k1 int32
-	var v1 *test2.Shared
+	var v1 test2.Shared
 	for i := 0; i < size; i++ {
 		k1, err = dec.ReadInt()
 		if err != nil {
 			return err
 		}
-		if err = dec.ReadRecord(v1); err != nil {
+		if err = dec.ReadRecord(&v1); err != nil {
 			return err
 		}
 		r.SharedMap[k1] = v1
@@ -67,7 +67,7 @@ func (r *External) Write(enc jute.Encoder) error {
 	if err := enc.WriteStart(); err != nil {
 		return err
 	}
-	if err := enc.WriteRecord(r.Shared); err != nil {
+	if err := enc.WriteRecord(&r.Shared); err != nil {
 		return err
 	}
 	if err := enc.WriteMapStart(len(r.SharedMap)); err != nil {
@@ -77,7 +77,7 @@ func (r *External) Write(enc jute.Encoder) error {
 		if err := enc.WriteInt(k); err != nil {
 			return err
 		}
-		if err := enc.WriteRecord(v); err != nil {
+		if err := enc.WriteRecord(&v); err != nil {
 			return err
 		}
 	}

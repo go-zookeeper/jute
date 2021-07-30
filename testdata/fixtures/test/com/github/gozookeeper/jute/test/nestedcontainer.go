@@ -13,7 +13,7 @@ type NestedContainer struct {
 	M1 map[int32]map[string]int32 // m1
 	M2 map[string][]float64       // m2
 	V1 [][][]int32                // v1
-	V2 []map[int32]*Basic         // v2
+	V2 []map[int32]Basic          // v2
 }
 
 func (r *NestedContainer) GetM1() map[int32]map[string]int32 {
@@ -37,7 +37,7 @@ func (r *NestedContainer) GetV1() [][][]int32 {
 	return nil
 }
 
-func (r *NestedContainer) GetV2() []map[int32]*Basic {
+func (r *NestedContainer) GetV2() []map[int32]Basic {
 	if r != nil && r.V2 != nil {
 		return r.V2
 	}
@@ -175,21 +175,21 @@ func (r *NestedContainer) Read(dec jute.Decoder) (err error) {
 	if size < 0 {
 		r.V2 = nil
 	} else {
-		r.V2 = make([]map[int32]*Basic, size)
+		r.V2 = make([]map[int32]Basic, size)
 		for i := 0; i < size; i++ {
 			size, err = dec.ReadMapStart()
 			if err != nil {
 				return err
 			}
-			r.V2[i] = make(map[int32]*Basic)
+			r.V2[i] = make(map[int32]Basic)
 			var k4 int32
-			var v4 *Basic
+			var v4 Basic
 			for i := 0; i < size; i++ {
 				k4, err = dec.ReadInt()
 				if err != nil {
 					return err
 				}
-				if err = dec.ReadRecord(v4); err != nil {
+				if err = dec.ReadRecord(&v4); err != nil {
 					return err
 				}
 				r.V2[i][k4] = v4
@@ -297,7 +297,7 @@ func (r *NestedContainer) Write(enc jute.Encoder) error {
 			if err := enc.WriteInt(k); err != nil {
 				return err
 			}
-			if err := enc.WriteRecord(v); err != nil {
+			if err := enc.WriteRecord(&v); err != nil {
 				return err
 			}
 		}
