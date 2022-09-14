@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -24,7 +24,7 @@ func Parse(name, input string) (*Doc, error) {
 }
 
 func ParseFile(filename string) (*Doc, error) {
-	p, err := ioutil.ReadFile(filename)
+	p, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file: %w", err)
 	}

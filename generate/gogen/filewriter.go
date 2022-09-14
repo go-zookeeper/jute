@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
-	"io/ioutil"
+	"os"
 )
 
 type fileWriter struct {
@@ -24,7 +24,7 @@ func (w *fileWriter) format() []byte {
 }
 
 func (w *fileWriter) writeFile(filename string) error {
-	if err := ioutil.WriteFile(filename, w.format(), 0644); err != nil {
+	if err := os.WriteFile(filename, w.format(), 0644); err != nil {
 		return fmt.Errorf("failed to write file '%s': %w", filename, err)
 	}
 	return nil
